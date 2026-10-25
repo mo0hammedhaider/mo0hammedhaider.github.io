@@ -19,13 +19,20 @@ var ICON={
   sndOn:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>'
 };
 
-/* ===== السلة: العطر الأساسي + لحد عطرين ===== */
-var BASE=(LP.bundle?LP.bundle.items:[LP.slug]).slice(), EXTRA=[];
-function items(){return BASE.concat(EXTRA)}
+/* ===== السلة: كمية العطر نفسه (1/2/3) + عطور ثانية ينضافن بخصم إضافي =====
+   الخصم حسب عدد العطور بالطلب: 2 → 18,000 · 3 → 40,000 · وكل عطر بعدها +18,000 */
+var BASE=(LP.bundle?LP.bundle.items:[LP.slug]).slice(), EXTRA=[], SEL=0;
+var U=LP.bundle?LP.bundle.price:CAT[LP.slug].price;
+function dN(n){return n<=1?0:n===2?DISC[2]:DISC[3]+(n-3)*DISC[2]}
+var TIERS=LP.tiers||(LP.bundle?[{q:1,price:U}]:[1,2,3].map(function(q){return{q:q,price:q*U-dN(q)}}));
+function qty(){return TIERS[SEL].q}
+function items(){var a=[];for(var i=0;i<qty();i++)a=a.concat(BASE);return a.concat(EXTRA)}
 function sum(){return items().reduce(function(a,s){return a+(CAT[s]?CAT[s].price:0)},0)}
-function total(){if(LP.bundle){var B=LP.bundle.price,ex=EXTRA.reduce(function(a,s){return a+CAT[s].price},0);return EXTRA.length?Math.min(B+ex,sum()-DISC[3]):B}
-  return sum()-(DISC[Math.min(items().length,3)]||0)}
+function exSum(){return EXTRA.reduce(function(a,s){return a+CAT[s].price},0)}
+function total(){if(LP.bundle)return TIERS[SEL].price+exSum()-EXTRA.length*DISC[2];
+  return U*qty()+exSum()-dN(qty()+EXTRA.length)}
 function disc(){return sum()-total()}
+function unitName(q){return LP.bundle?(q===1?"عرض واحد":q===2?"عرضين":q+" عروض"):(q===1?"عطر واحد":q===2?"عطرين":q+" عطور")}
 
 /* ===== البناء ===== */
 document.documentElement.style.setProperty("--ac",LP.theme.ac);
@@ -76,9 +83,9 @@ A.push('<section class="sec dark" id="safe"><div class="wrap reveal"><div class=
   '</div><div class="gbox"><h3>وبعد الاستلام، عندك 7 أيام</h3><ul><li>الاستبدال مفتوح وبأي فرع من فروع الدار، حتى لو طلبت أونلاين.</li><li>أول استبدال أو استرجاع بالتوصيل علينا.</li><li>نقبل فاتورة الفرع أو فاتورة التوصيل، أو حتى صورتها.</li></ul><div class="dl"><div><small>التوصيل</small><b class="n">5,000</b></div><div><small>بغداد</small><b>خلال 18 ساعة</b></div><div><small>المحافظات</small><b>24–48 ساعة</b></div></div></div></div></section>');
 
 // الطلب + مكوّن العرض
-A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">اطلب</div><h2 class="h2">'+(LP.bundle?"ثبّت العرض":"عطر واحد… لو تجمع وتوفّر؟")+'</h2><p class="lead">'+(LP.orderLead||'عطرين بخصم <b class="n">18,000</b>، و3 عطور بخصم <b class="n">40,000</b>. اختار من تحت وشوف المجموع يتغير.')+'</p>'+
-  '<div class="build"><div class="slots" id="slots"></div><div class="meter"><div class="tx" id="mtx"></div><div class="bar"><i id="mbar"></i></div>'+(LP.bundle?'':'<div class="ticks"><span>عطر</span><span>عطرين −18,000</span><span>3 عطور −40,000</span></div>')+'</div>'+
-  '<div class="pick-h" id="pickH">ضيف عطر ثاني (يصير الخصم تلقائياً)</div><div class="picks" id="picks"></div></div>'+
+A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">اطلب</div><h2 class="h2">'+(LP.bundle?"ثبّت العرض":"اختار عرضك")+'</h2><p class="lead">'+(LP.orderLead||'عطرين بخصم <b class="n">18,000</b>، و3 بخصم <b class="n">40,000</b>. وحدة إلك، والباقي هدية لناس تحبهم.')+'</p>'+
+  '<div class="tiers" id="tiers"></div>'+
+  '<div class="build"><div class="pick-h" id="pickH"></div><p class="pick-l" id="pickL"></p><div class="picks" id="picks"></div><div class="chosen" id="chosen"></div></div>'+
   '<form class="form" id="form" novalidate><div class="f"><label for="nm">الاسم</label><input id="nm" autocomplete="name" placeholder="اسمك الكامل"><div class="em">اكتب اسمك</div></div>'+
   '<div class="f"><label for="ph">رقم الموبايل</label><input id="ph" inputmode="numeric" autocomplete="tel" placeholder="07xxxxxxxxx" dir="ltr" style="text-align:right"><div class="hint" id="phHint"></div><div class="em" id="phMsg">اكتب رقم عراقي صحيح يبدي بـ07</div></div>'+
   '<div class="f"><label for="gv">المحافظة</label><select id="gv"><option value="">اختار المحافظة</option></select><div class="em">اختار المحافظة</div></div>'+
@@ -149,33 +156,34 @@ function paintQuiz(){var box=$("#qz");if(qi<QZ.length){var Z=QZ[qi];
 }
 paintQuiz();
 
-/* ===== مكوّن العرض ===== */
-function addExtra(s){if(items().length>=3)return;EXTRA.push(s);paintCart();track("AddToCart",{content_ids:[CAT[s].pid],value:CAT[s].price,currency:"IQD"})}
-function paintCart(){var it=items(),n=it.length;
-  $("#slots").innerHTML=[0,1,2].map(function(i){var s=it[i];if(s){var fixed=i<BASE.length;return'<div class="slot full"><img src="'+CAT[s].img+'" alt=""><b>'+esc(CAT[s].name)+'</b><small class="n">'+money(CAT[s].price)+'</small>'+(fixed?"":'<button class="x" data-rm="'+(i-BASE.length)+'" aria-label="شيل">×</button>')+'</div>'}
-    return'<div class="slot">'+(i===n?'<span class="lock">'+(LP.bundle?"وفّر أكثر":i===1?"−18,000":"−40,000")+'</span>':"")+'<span class="plus">+</span><small>'+(i===1?"عطر ثاني":"عطر ثالث")+'</small></div>'}).join("");
-  $$("[data-rm]").forEach(function(b){b.addEventListener("click",function(){EXTRA.splice(+b.dataset.rm,1);paintCart()})});
-  var d=disc();
-  $("#mtx").innerHTML=LP.bundle?(n===2?'العرض موفّرلك <b class="n">'+money(d)+'</b> عن سعر العطرين منفردين 🎉 ضيف عطر ثالث ويزيد التوفير':'وفّرت <b class="n">'+money(d)+'</b> على 3 عطور 🎉 هذا أعلى خصم'):
-    n===1?'ضيف عطر ثاني وينزل المجموع <b class="n">18,000</b>':n===2?'وفّرت <b class="n">18,000</b> 🎉 ضيف عطر ثالث ويصير الخصم <b class="n">40,000</b>':'وفّرت <b class="n">40,000</b> على 3 عطور 🎉 هذا أعلى خصم';
-  $("#mbar").style.width=(n===1?6:n===2?52:100)+"%";
-  $("#pickH").style.display=n>=3?"none":"block";$("#pickH").textContent=n===1?"ضيف عطر ثاني (الخصم ينزل تلقائياً)":"ضيف عطر ثالث"+(LP.bundle?" ويزيد التوفير":" ويصير الخصم 40,000");$("#picks").style.display=n>=3?"none":"flex";
-  var order=Object.keys(CAT).sort(function(a,b){return(a===LP.slug?-1:0)-(b===LP.slug?-1:0)});
-  $("#picks").innerHTML=order.map(function(s){var c=CAT[s],same=it.indexOf(s)>=0;return'<button type="button" class="pk'+(same?" same":"")+'" data-add="'+s+'">'+(same?'<span class="tg">نسخة ثانية</span>':"")+'<img loading="lazy" src="'+c.img+'" alt=""><b>'+esc(c.name)+'</b><span>'+esc(c.line)+'</span><div class="pp n">'+money(c.price)+'</div><span class="ad">+ ضيف</span></button>'}).join("");
+/* ===== الخيارات + إضافة عطور ثانية ===== */
+function addExtra(s){if(EXTRA.length>=3)return;EXTRA.push(s);paintCart();track("AddToCart",{content_ids:[CAT[s].pid],value:CAT[s].price,currency:"IQD"})}
+function nextSave(){var n=items().length;return LP.bundle?DISC[2]:dN(n+1)-dN(n)}
+function paintCart(){var n=items().length,d=disc(),T=TIERS[SEL];
+  $("#tiers").innerHTML=TIERS.map(function(t,i){var sv=U*t.q-t.price;return'<button type="button" class="tier'+(i===SEL?" on":"")+'" data-i="'+i+'">'+(TIERS.length===3&&i===1?'<span class="badge">الأكثر طلباً</span>':"")+
+    '<span class="rd"></span><span class="tt"><b>'+unitName(t.q)+'</b><span>'+(t.sub||(t.q===1?(LP.bundle?esc(LP.bundle.contents):"بسعره"):t.q===2?"وحدة إلك ووحدة هدية":"إلك ولعائلتك"))+'</span>'+(sv?'<span class="save">توفّر '+money(sv)+' د.ع</span>':"")+'</span><span class="tp">'+(sv?'<s>'+money(U*t.q)+'</s>':"")+'<b>'+money(t.price)+'</b></span></button>'}).join("");
+  $$(".tier").forEach(function(b){b.addEventListener("click",function(){SEL=+b.dataset.i;paintCart()})});
+  var ns=nextSave(), full=EXTRA.length>=3;
+  $("#pickH").textContent=EXTRA.length?"تريد تضيف عطر ثاني بعد؟":"تريد تضيف عطر ثاني ويّا طلبك؟";
+  $("#pickL").innerHTML=full?"وصلت أعلى عدد إضافات بالطلب.":'كل عطر تضيفه ينزل المجموع. العطر الجاي ينزله <b class="n">'+money(ns)+'</b> د.ع إضافية.';
+  $("#picks").style.display=full?"none":"flex";
+  $("#picks").innerHTML=Object.keys(CAT).filter(function(s){return BASE.indexOf(s)<0}).map(function(s){var c=CAT[s];return'<button type="button" class="pk" data-add="'+s+'"><img loading="lazy" src="'+c.img+'" alt=""><b>'+esc(c.name)+'</b><span>'+esc(c.line)+'</span><div class="pp n">'+money(c.price)+'</div><span class="ad">+ ضيف وخصم '+money(ns)+'</span></button>'}).join("");
   $$("#picks [data-add]").forEach(function(b){b.addEventListener("click",function(){addExtra(b.dataset.add)})});
-  var B=LP.bundle,lines,dl=d,dlab="خصم "+(n===2?"عطرين":"3 عطور");
-  if(B){lines='<div><span>'+esc(B.rz)+' ('+esc(B.contents.replace(/ 100 مل/g,""))+')</span><span class="n">'+money(B.price)+'</span></div>'+EXTRA.map(function(s){return'<div><span>'+esc(CAT[s].name)+'</span><span class="n">'+money(CAT[s].price)+'</span></div>'}).join("");dl=B.price+EXTRA.reduce(function(a,s){return a+CAT[s].price},0)-total();dlab="خصم 3 عطور"}
-  else lines=it.map(function(s){return'<div><span>'+esc(CAT[s].name)+'</span><span class="n">'+money(CAT[s].price)+'</span></div>'}).join("");
-  $("#osum").innerHTML=lines+(dl?'<div class="sv"><span>'+dlab+'</span><span class="n">−'+money(dl)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
+  $("#chosen").innerHTML=EXTRA.map(function(s,i){return'<span class="ch"><img src="'+CAT[s].img+'" alt="">'+esc(CAT[s].name)+'<button type="button" data-rm="'+i+'" aria-label="شيل">×</button></span>'}).join("");
+  $$("[data-rm]").forEach(function(b){b.addEventListener("click",function(){EXTRA.splice(+b.dataset.rm,1);paintCart()})});
+  var mainLine=LP.bundle?'<div><span>'+esc(LP.bundle.rz)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(T.price)+'</span></div>':'<div><span>'+esc(LP.name)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(U*T.q)+'</span></div>';
+  var exLines=EXTRA.map(function(s){return'<div><span>'+esc(CAT[s].name)+'</span><span class="n">'+money(CAT[s].price)+'</span></div>'}).join("");
+  var shownDisc=LP.bundle?EXTRA.length*DISC[2]:d;
+  $("#osum").innerHTML=mainLine+exLines+(shownDisc?'<div class="sv"><span>الخصم ('+n+' عطور)</span><span class="n">−'+money(shownDisc)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
   $("#hNow").textContent=money(total());
-  $("#hNote").innerHTML=n===1?(LP.priceNote||"")+'<br>عطرين بخصم <b class="n">18,000</b> · 3 عطور بخصم <b class="n">40,000</b>':'<s class="was n">'+money(sum())+'</s>'+n+' عطور بالطلب · وفّرت <b class="n">'+money(d)+'</b>';
-  $("#stPr").textContent=money(total());$("#stLab").textContent=n===1?LP.name:n+" عطور · وفّرت "+money(d);
+  $("#hNote").innerHTML=(n<=(LP.bundle?2:1))?(LP.priceNote||"")+(LP.bundle?"":'<br>عطرين بخصم <b class="n">18,000</b> · 3 بخصم <b class="n">40,000</b>'):'<s class="was n">'+money(sum())+'</s>'+n+' عطور بالطلب · وفّرت <b class="n">'+money(d)+'</b>';
+  $("#stPr").textContent=money(total());$("#stLab").textContent=n<=(LP.bundle?2:1)?LP.name:n+" عطور · وفّرت "+money(d);
 }
 paintCart();
 
 /* ===== الشريط السفلي والأزرار ===== */
 var orderSec=$("#order"),heroCta=$(".hero .cta"),inHero=true,inOrder=false;
-function stick(){$("#sticky").classList.toggle("show",!inHero&&!inOrder)}
+function stick(){$("#sticky").classList.add("show")}stick();
 new IntersectionObserver(function(e){inHero=e[0].isIntersecting;stick()}).observe(heroCta);
 new IntersectionObserver(function(e){inOrder=e[0].isIntersecting;stick()},{threshold:.05}).observe(orderSec);
 function bindGo(r){$$("[data-go]",r).forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();orderSec.scrollIntoView({behavior:"smooth"});if(!window.__ic){window.__ic=1;track("InitiateCheckout",{value:total(),currency:"IQD",content_ids:items().map(function(s){return CAT[s].pid})})}})})}
@@ -201,7 +209,7 @@ $("#form").addEventListener("submit",function(e){e.preventDefault();
   var nm=$("#nm").value.trim(),ph=normPhone($("#ph").value),gv=$("#gv").value,ad=$("#ad").value.trim();
   var bad=[setErr("nm",nm.length<2),setErr("ph",!/^07[3-9]\d{8}$/.test(ph)),setErr("gv",!gv),setErr("ad",ad.length<4)].some(Boolean);
   if(bad){var f=$(".f.err input,.f.err select,.f.err textarea");f&&f.focus();return}
-  ORDER={name:nm,phone:ph,governorate:gv,address:ad,items:items(),sum:sum(),disc:disc(),total:total()};SENT=null;
+  ORDER={name:nm,phone:ph,governorate:gv,address:ad,items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total()};SENT=null;
   showUpsell();
 });
 
@@ -238,19 +246,18 @@ var SRC=(function(){var k="aj_src",q=new URLSearchParams(location.search),v={};[
 function srcLine(){var a=SRC.utm_content||SRC.utm_campaign;return a?"الإعلان: "+a+(SRC.utm_campaign&&SRC.utm_content?" · "+SRC.utm_campaign:""):(SRC.fbclid?"الإعلان: ميتا (بدون اسم)":"الإعلان: زيارة مباشرة")}
 function hairName(id){var h=HAIR.items.filter(function(x){return x.id===id})[0];return "عطر شعر "+(h?h.name:id)}
 function orderText(o){
-  var cnt={};o.items.forEach(function(s){cnt[s]=(cnt[s]||0)+1});
-  var hp=o.hair?HAIR.price:0, all=o.total+hp, B=LP.bundle, n=o.items.length, ex=B?o.items.slice(B.items.length):o.items;
+  var B=LP.bundle, q=o.q, ex=o.extra, hp=o.hair?HAIR.price:0, all=o.total+hp;
   var L=["━━━━━━━━━━━━"];
-  if(B){L.push("🛍 العرض: "+B.rz+" ("+B.contents+")");if(ex.length)L.push("➕ عطر إضافي: "+ex.map(function(s){return CAT[s].name}).join(" + "))}
-  else L.push("🛍 الطلب: "+Object.keys(cnt).map(function(s){return CAT[s].name+(cnt[s]>1?" × "+cnt[s]:"")}).join(" + ")+(n>1?" · خصم "+(n===2?"عطرين":"3 عطور")+" "+money(o.disc):""));
-  if(B&&ex.length)L.push("🏷 خصم 3 عطور: "+money(B.price+ex.reduce(function(a,s){return a+CAT[s].price},0)-o.total));
+  L.push(B?"🛍 العرض: "+B.rz+" · "+unitName(q)+" ("+B.contents+")":"🛍 الطلب: "+LP.name+" · "+unitName(q));
+  if(ex.length)L.push("➕ عطور مضافة: "+ex.map(function(s){return CAT[s].name}).join(" + "));
+  if(o.disc)L.push("🏷 الخصم: "+money(o.disc)+" ("+o.items.length+" عطور)");
   if(o.hair)L.push("➕ إضافة على نفس الطلب: "+hairName(o.hair)+" بـ28,000 بدل 58,000");
   L.push("💰 المجموع: "+money(all)+" + توصيل "+money(SHIP)+" = "+money(all+SHIP)+" د.ع (دفع عند الاستلام)","━━━━━━━━━━━━","",
     "الاسم: "+o.name,"الرقم: "+o.phone,"العنوان: "+o.governorate+" "+o.address,"","تفاصيل الطلب:");
-  if(B){L.push("المنتج: "+B.rz+"، العدد: 1");ex.forEach(function(s){L.push("المنتج: "+CAT[s].rz+"، العدد: 1")})}
-  else Object.keys(cnt).forEach(function(s){L.push("المنتج: "+CAT[s].rz+"، العدد: "+cnt[s])});
-  var rzBase=B?B.price+ex.reduce(function(a,s){return a+CAT[s].price},0):o.sum, rzDisc=rzBase-o.total;
-  if(rzDisc)L.push("الخصم: "+money(rzDisc)+(B?" (عطر ثالث ويّا العرض)":" ("+(n===2?"عطرين":"3 عطور")+")"));
+  L.push("المنتج: "+(B?B.rz:CAT[LP.slug].rz)+"، العدد: "+q);
+  var cnt={};ex.forEach(function(s){cnt[s]=(cnt[s]||0)+1});Object.keys(cnt).forEach(function(s){L.push("المنتج: "+CAT[s].rz+"، العدد: "+cnt[s])});
+  var rzBase=(B?TIERS[o.sel].price:U*q)+ex.reduce(function(a,s){return a+CAT[s].price},0), rzDisc=rzBase-o.total;
+  if(rzDisc)L.push("الخصم: "+money(rzDisc));
   if(o.hair)L.push("المنتج: "+hairName(o.hair)+" · بـ28 ألف بدل 58 (عرض الصفحة)، العدد: 1");
   L.push("السعر: "+money(all)+" وتوصيل "+money(SHIP),"","ملاحظة: تجربة العطر من خلال التيستر فقط","المصدر: صفحة "+LP.name,srcLine());
   return L.join("\n");
