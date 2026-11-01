@@ -210,6 +210,7 @@ $("#form").addEventListener("submit",function(e){e.preventDefault();
   var bad=[setErr("nm",nm.length<2),setErr("ph",!/^07[3-9]\d{8}$/.test(ph)),setErr("gv",!gv),setErr("ad",ad.length<4)].some(Boolean);
   if(bad){var f=$(".f.err input,.f.err select,.f.err textarea");f&&f.focus();return}
   ORDER={name:nm,phone:ph,governorate:gv,address:ad,items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total()};SENT=null;
+  matchUser(ORDER);
   showUpsell();
 });
 
@@ -266,6 +267,9 @@ function capiData(v,ids,n){function ck(k){var m=document.cookie.match(new RegExp
 function payload(o){if(!o.ref)o.ref=LP.code+"-"+Date.now().toString(36).toUpperCase();
   return {kind:"order",page:LP.slug,ref:o.ref,name:o.name,phone:o.phone,governorate:o.governorate,summary:o.items.map(function(s){return CAT[s].name}).join(" + ")+(o.hair?" + "+hairName(o.hair):""),text:"#طلب_جديد "+o.ref+"\n"+orderText(o),capi:capiData(o.total+(o.hair?HAIR.price:0),o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),o.items.length)}}
 function placeOrder(o){return relay(payload(o)).then(function(){track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),content_type:"product",value:o.total+(o.hair?HAIR.price:0),currency:"IQD",num_items:o.items.length},{eventID:o.ref})})}
+// مطابقة متقدمة: نعطي البكسل رقم الزبون واسمه ومحافظته لحظة «ثبّت»، والبكسل يشفّرهن بنفسه (SHA-256) قبل ما يطلعن
+var GOV_EN={"بغداد":"baghdad","البصرة":"basra","نينوى":"nineveh","أربيل":"erbil","النجف":"najaf","كربلاء":"karbala","بابل":"babil","ذي قار":"dhiqar","الأنبار":"anbar","ديالى":"diyala","صلاح الدين":"salahaddin","كركوك":"kirkuk","واسط":"wasit","ميسان":"maysan","الديوانية":"diwaniyah","المثنى":"muthanna","السليمانية":"sulaymaniyah","دهوك":"duhok","حلبجة":"halabja"};
+function matchUser(o){try{if(!window.fbq||typeof AJ_PIXEL==="undefined")return;var n=o.name.toLowerCase().split(/\s+/).filter(Boolean),u={ph:"964"+o.phone.slice(1),country:"iq"};if(n[0])u.fn=n[0];if(n.length>1)u.ln=n[n.length-1];if(GOV_EN[o.governorate])u.ct=GOV_EN[o.governorate];fbq("init",AJ_PIXEL,u)}catch(e){}}
 function track(ev,p,o){try{if(!window.fbq)return;var std=["Purchase","AddToCart","InitiateCheckout","ViewContent"];if(std.indexOf(ev)>=0)fbq("track",ev,p||{},o||{});else fbq("trackCustom",ev,p||{})}catch(e){}}
 
 /* ===== عدّاد حقيقي (زوار + طلبات هالصفحة) ===== */
