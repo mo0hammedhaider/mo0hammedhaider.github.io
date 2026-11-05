@@ -75,7 +75,7 @@ A.push('<section class="sec" style="padding-top:0"><div class="wrap reveal"><div
 // الآراء
 if((LP.shots&&LP.shots.length)||(LP.quotes&&LP.quotes.length)) A.push('<section class="sec" id="rev" style="background:#f3ebe2"><div class="wrap reveal"><div class="kick">رسائل زبائن حقيقيين</div><h2 class="h2">'+(LP.revH||"شنو كتبولنا بعد ما وصلهم")+'</h2></div>'+
   (LP.shots&&LP.shots.length?'<div class="shots">'+LP.shots.map(function(s){return'<div class="shot"><img loading="lazy" src="'+s+'" alt="رسالة زبون"></div>'}).join("")+'</div>':"")+
-  '<div class="wrap"><div class="quotes" id="quotes"></div><button class="more" id="moreQ">اعرض كل الرسائل</button><p class="disc">الرسائل منقولة مثل ما وصلتنا، بدون أسماء أو صور حفاظاً على خصوصية الزبائن.</p></div></section>');
+  '<div class="wrap"><div class="quotes" id="quotes"></div><button class="more" id="moreQ">اعرض كل الرسائل</button><p class="disc">الرسائل منقولة مثل ما وصلتنا. الأسماء والصور بالسكرينات منشورة بموافقة أصحابها.</p></div></section>');
 
 // الأمان
 A.push('<section class="sec dark" id="safe"><div class="wrap reveal"><div class="kick">المخاطرة علينا</div><h2 class="h2">ما تدفع على شي ما جرّبته</h2><div class="steps">'+
