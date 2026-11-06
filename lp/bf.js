@@ -80,7 +80,7 @@ if(HUB){
   A.push('<section class="sec" id="story"><div class="wrap reveal"><div class="kick">'+esc(LP.story.k)+'</div><h2 class="h2">'+LP.story.h+'</h2><div class="story">'+LP.story.ps.map(function(p,i){return i===LP.story.qAt?'<p class="q">'+p+'</p>':"<p>"+p+"</p>"}).join("")+'</div></div></section>');
 
   // الآراء
-  A.push('<section class="sec" id="rev" style="background:#f3ebe2"><div class="wrap reveal"><div class="kick">رسائل زبائن حقيقيين</div><h2 class="h2">شنو كتبولنا بعد ما وصلهم</h2></div><div class="wrap"><div class="quotes" id="quotes"></div><p class="disc">الرسائل منقولة مثل ما وصلتنا عن عطور الدار.</p></div></section>');
+  A.push('<section class="sec" id="rev" style="background:#f3ebe2"><div class="wrap reveal"><div class="kick">رسائل زبائن حقيقيين</div><h2 class="h2">شنو كتبولنا بعد ما وصلهم</h2></div><div class="shots">'+["damar-01-9237","nabd-01-9239","elite-01-9166","kivora-01-9272","darius-01-9191","damar-02-9644","nabd-02-9225","elite-02-9210","kivora-02-9462_2","darius-02-9146","damar-03-9280","nabd-03-9255","elite-03-9162","kivora-03-9863"].map(function(n){return'<div class="shot"><img loading="lazy" decoding="async" src="../lp/rev2/'+n+'.webp" alt="رسالة زبون"></div>'}).join("")+'</div><div class="wrap"><div class="quotes" id="quotes"></div><p class="disc">الرسائل منقولة مثل ما وصلتنا عن عطور الدار.</p></div></section>');
 
   // الأمان
   A.push('<section class="sec dark" id="safe"><div class="wrap reveal"><div class="kick">المخاطرة علينا</div><h2 class="h2">ما تدفع على شي ما جرّبته</h2><div class="steps">'+
