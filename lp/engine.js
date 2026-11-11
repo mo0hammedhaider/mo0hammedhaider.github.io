@@ -22,7 +22,7 @@ var ICON={
 /* ===== السلة: كمية العطر نفسه (1/2/3) + عطور ثانية ينضافن بخصم إضافي =====
    الخصم حسب عدد العطور بالطلب: 2 → 18,000 · 3 → 40,000 · وكل عطر بعدها +18,000 */
 var BASE=(LP.bundle?LP.bundle.items:[LP.slug]).slice(), EXTRA=[], SEL=0;
-var U=LP.bundle?LP.bundle.price:CAT[LP.slug].price;
+var U=LP.bundle?LP.bundle.price:CAT[LP.slug].price, W=LP.bundle&&LP.bundle.was||U;
 function dN(n){return n<=1?0:n===2?DISC[2]:DISC[3]+(n-3)*DISC[2]}
 var TIERS=LP.tiers||(LP.bundle?[{q:1,price:U}]:[1,2,3].map(function(q){return{q:q,price:q*U-dN(q)}}));
 function qty(){return TIERS[SEL].q}
@@ -32,7 +32,7 @@ function exSum(){return EXTRA.reduce(function(a,s){return a+CAT[s].price},0)}
 function total(){if(LP.bundle)return TIERS[SEL].price+exSum()-EXTRA.length*DISC[2];
   return U*qty()+exSum()-dN(qty()+EXTRA.length)}
 function disc(){return sum()-total()}
-function unitName(q){return LP.bundle?(q===1?"عرض واحد":q===2?"عرضين":q+" عروض"):(q===1?"عطر واحد":q===2?"عطرين":q+" عطور")}
+function unitName(q){if(LP.units&&LP.units[q-1])return LP.units[q-1];return LP.bundle?(q===1?"عرض واحد":q===2?"عرضين":q+" عروض"):(q===1?"عطر واحد":q===2?"عطرين":q+" عطور")}
 
 /* ===== البناء ===== */
 document.documentElement.style.setProperty("--ac",LP.theme.ac);
@@ -42,9 +42,10 @@ A.push('<div class="ticker" aria-hidden="true"><div class="t">'+[0,1,2].map(func
 A.push('<header class="wrap hdr"><img src="../lp/logo.png" alt="الجسمي"><b>دار الجسمي للعطور</b></header>');
 
 // الهيرو
-var bt=LP.bundle?LP.bundle.items.map(function(s,i){return'<img class="btl b'+(i+1)+'" src="'+CAT[s].img+'" alt="عطر '+CAT[s].name+'">'}).join(""):'<img class="btl" src="'+LP.img.btl+'" alt="عطر '+LP.name+'" fetchpriority="high">';
+var COMP=!!(LP.bundle&&LP.img&&LP.img.btl);
+var bt=LP.bundle&&!COMP?LP.bundle.items.map(function(s,i){return'<img class="btl b'+(i+1)+'" src="'+CAT[s].img+'" alt="عطر '+CAT[s].name+'">'}).join(""):'<img class="btl" src="'+LP.img.btl+'" alt="عطر '+LP.name+'" fetchpriority="high">';
 A.push('<section class="hero"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
-  '<div class="stage'+(LP.bundle?" pair":"")+'"><canvas class="fx"></canvas><div class="halo"></div><div class="plinth"></div>'+bt+'<div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
+  '<div class="stage'+(COMP?" comp":LP.bundle?" pair":"")+'"><canvas class="fx"></canvas><div class="halo"></div><div class="plinth"></div>'+bt+'<div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
   '<p class="sub">'+LP.hero.sub+'</p>'+
   '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div>'+
   '<div class="pricebox"><div class="now"><small>السعر</small><span class="n" id="hNow"></span> <span class="u">د.ع</span></div><div class="note" id="hNote"></div></div>'+
@@ -58,7 +59,7 @@ if(LP.reels&&LP.reels.length) A.push('<section class="sec dark" id="reels"><div 
 
 // رحلة الرشّة
 A.push('<section class="sec" id="smell"><div class="wrap"><div class="reveal"><div class="kick">'+(LP.journeyK||"شلون رائحته؟")+'</div><h2 class="h2">'+(LP.journeyH||"رشّة وحدة… وثلاث مراحل")+'</h2><p class="lead">'+(LP.journeyLead||"اضغط على كل مرحلة وشوف شنو تشم.")+'</p></div><div class="journey">'+
-  LP.journey.map(function(j,i){return'<div class="stage3 reveal'+(i===0?" on":"")+'" data-i="'+i+'"><div class="tm"><i></i><span>'+j.t+'</span></div><div><b>'+j.h+'</b><p>'+j.p+'</p><div class="notes">'+j.notes.map(function(n){return"<span>"+n+"</span>"}).join("")+'</div></div></div>'}).join("")+
+  LP.journey.map(function(j,i){return'<div class="stage3 reveal'+(i===0?" on":"")+'" data-i="'+i+'"><div class="tm">'+(j.img?'<img src="'+j.img+'" alt="">':'<i></i>')+'<span>'+j.t+'</span></div><div><b>'+j.h+'</b><p>'+j.p+'</p><div class="notes">'+j.notes.map(function(n){return"<span>"+n+"</span>"}).join("")+'</div></div></div>'}).join("")+
   '</div>'+(LP.img.ing?'<div class="ingimg reveal"><img loading="lazy" src="'+LP.img.ing+'" alt="مكونات '+esc(LP.name)+'"></div>':"")+'</div></section>');
 
 // القصة
@@ -67,10 +68,10 @@ A.push('<section class="sec dark" id="story"><div class="wrap reveal"><div class
   '<div class="facts">'+LP.story.facts.map(function(f){return"<div><small>"+f[0]+"</small><b>"+f[1]+"</b></div>"}).join("")+'</div></div></section>');
 
 // اختبار المطابقة
-A.push('<section class="sec" id="quiz"><div class="wrap"><div class="reveal"><div class="kick">30 ثانية</div><h2 class="h2">هل '+esc(LP.quizName||LP.name)+' عطرك؟</h2><p class="lead">3 أسئلة وتعرف. وإذا مو إلك، نكلك بصراحة شنو يناسبك أكثر.</p></div><div class="quiz reveal" id="qz"></div><p class="disc">النتيجة حسب أجوبتك وشخصية كل عطر من وصف الدار.</p></div></section>');
+A.push('<section class="sec" id="quiz"><div class="wrap"><div class="reveal"><div class="kick">30 ثانية</div><h2 class="h2">هل '+esc(LP.quizName||LP.name)+(LP.bundle?' باقتك؟':' عطرك؟')+'</h2><p class="lead">3 أسئلة وتعرف. وإذا مو إلك، نكلك بصراحة شنو يناسبك أكثر.</p></div><div class="quiz reveal" id="qz"></div><p class="disc">النتيجة حسب أجوبتك وشخصية كل عطر من وصف الدار.</p></div></section>');
 
 // يناسبك / ما يناسبك
-A.push('<section class="sec" style="padding-top:0"><div class="wrap reveal"><div class="kick">بصراحة</div><h2 class="h2">لِمَن هذا العطر؟</h2><div class="fit"><div class="c yes"><h3>يناسبك إذا</h3><ul>'+LP.fit.yes.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div><div class="c no"><h3>ما ننصحك بيه إذا</h3><ul>'+LP.fit.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div></div></div></section>');
+A.push('<section class="sec" style="padding-top:0"><div class="wrap reveal"><div class="kick">بصراحة</div><h2 class="h2">'+(LP.bundle?'لِمَن هذي الباقة؟':'لِمَن هذا العطر؟')+'</h2><div class="fit"><div class="c yes"><h3>يناسبك إذا</h3><ul>'+LP.fit.yes.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div><div class="c no"><h3>ما ننصحك بيه إذا</h3><ul>'+LP.fit.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div></div></div></section>');
 
 // الآراء
 if((LP.shots&&LP.shots.length)||(LP.quotes&&LP.quotes.length)) A.push('<section class="sec" id="rev" style="background:#f3ebe2"><div class="wrap reveal"><div class="kick">رسائل زبائن حقيقيين</div><h2 class="h2">'+(LP.revH||"شنو كتبولنا بعد ما وصلهم")+'</h2></div>'+
@@ -99,7 +100,7 @@ var FAQ=[["ما أكدر أشمّه من الموبايل… شلون أعرف �
   .concat(LP.faq||[]).concat([
   ["شلون يشتغل خصم العطرين والثلاثة؟","أي عطرين من الدار بنفس الطلب ينزل المجموع 18,000، و3 عطور ينزل 40,000. تكدر تاخذ نفس العطر مرتين (واحد هدية) أو تخلط."],
   ["شوكت يوصلني؟ وبكم التوصيل؟","التوصيل 5,000 د.ع لكل المحافظات. ببغداد خلال 18 ساعة من تأكيد الطلب، وباقي المحافظات 24 إلى 48 ساعة. المندوب يتصل بيك قبل ما يوصل."],
-  ["لازم أدفع هسه؟","لا. تدفع نقداً للمندوب بعد ما تجرب التستر. بعد ما ترسل الطلب نتصل بيك نأكد العنوان."]]);
+  ["لازم أدفع هسه؟","لا. تدفع نقداً للمندوب بعد ما تجرب التستر. بعد ما ترسل الطلب نتصل بيك نأكد العنوان."]]).filter(function(f){return !(LP.bundle&&f[0].indexOf("خصم العطرين")>=0)});
 A.push('<section class="sec" id="faq"><div class="wrap"><div class="kick">قبل لا تطلب</div><h2 class="h2">أسئلة تدور براسك</h2><div style="margin-top:14px">'+FAQ.map(function(q,i){return'<details class="qa"'+(i===0?" open":"")+'><summary>'+q[0]+'<i></i></summary><p>'+q[1]+'</p></details>'}).join("")+'</div><a class="cta" href="#order" data-go>اطلب '+esc(LP.name)+'</a></div></section>');
 
 A.push('<footer class="foot"><div class="wrap"><img src="../lp/logo-light.png" alt="الجسمي"><b>دار الجسمي للعطور</b><p>العطر تجربة، مو اختيار.</p><div class="others">'+(window.PAGES||[]).filter(function(p){return p[0]!==LP.slug}).map(function(p){return'<a href="../'+p[0]+'/">'+p[1]+'</a>'}).join("")+'</div></div></footer>');
@@ -135,10 +136,10 @@ function paintQuiz(){var box=$("#qz");if(qi<QZ.length){var Z=QZ[qi];
   box.innerHTML='<div class="qbar"><i style="width:'+(qi/QZ.length*100)+'%"></i></div><div class="qq"><div class="kick">سؤال '+(qi+1)+' من '+QZ.length+'</div><h3>'+Z.q+'</h3><div class="opts">'+Z.o.map(function(o){return'<button data-v="'+o[2]+'"><em>'+o[0]+'</em>'+o[1]+'</button>'}).join("")+'</div></div>';
   $$(".opts button",box).forEach(function(b){b.addEventListener("click",function(){b.classList.add("on");ans[Z.k]=b.dataset.v;if(qi===0)track("QuizStart");setTimeout(function(){qi++;paintQuiz()},220)})});return}
   // النتيجة
-  var sc={};Object.keys(CAT).forEach(function(s){var t=CAT[s].t||{};sc[s]=(t[ans.when]||0)*1.2+(t[ans.vibe]||0)*1.5});
+  var sc={};Object.keys(CAT).filter(function(s){return!CAT[s].noPick}).forEach(function(s){var t=CAT[s].t||{};sc[s]=(t[ans.when]||0)*1.2+(t[ans.vibe]||0)*1.5});
   var me=LP.bundle?LP.bundle.items:[LP.slug];
   var best=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a]})[0];
-  var mine=Math.max.apply(null,me.map(function(s){return sc[s]})), top=sc[best]||1;
+  var mine=Math.max.apply(null,me.map(function(s){return sc[s]||0})), top=sc[best]||1;
   var pct=Math.max(58,Math.min(97,Math.round(60+37*mine/top)));
   var good=mine>=top*.82, alt=good?null:best;
   if(good&&!LP.bundle){var others=Object.keys(sc).filter(function(s){return me.indexOf(s)<0}).sort(function(a,b){return sc[b]-sc[a]});alt=others[0]}
@@ -160,24 +161,24 @@ paintQuiz();
 function addExtra(s){if(EXTRA.length>=3)return;EXTRA.push(s);paintCart();track("AddToCart",{content_ids:[CAT[s].pid],value:CAT[s].price,currency:"IQD"})}
 function nextSave(){var n=items().length;return LP.bundle?DISC[2]:dN(n+1)-dN(n)}
 function paintCart(){var n=items().length,d=disc(),T=TIERS[SEL];
-  $("#tiers").innerHTML=TIERS.map(function(t,i){var sv=U*t.q-t.price;return'<button type="button" class="tier'+(i===SEL?" on":"")+'" data-i="'+i+'">'+(TIERS.length===3&&i===1?'<span class="badge">الأكثر طلباً</span>':"")+
-    '<span class="rd"></span><span class="tt"><b>'+unitName(t.q)+'</b><span>'+(t.sub||(t.q===1?(LP.bundle?esc(LP.bundle.contents):"بسعره"):t.q===2?"وحدة إلك ووحدة هدية":"إلك ولعائلتك"))+'</span>'+(sv?'<span class="save">توفّر '+money(sv)+' د.ع</span>':"")+'</span><span class="tp">'+(sv?'<s>'+money(U*t.q)+'</s>':"")+'<b>'+money(t.price)+'</b></span></button>'}).join("");
+  $("#tiers").innerHTML=TIERS.map(function(t,i){var sv=W*t.q-t.price;return'<button type="button" class="tier'+(i===SEL?" on":"")+'" data-i="'+i+'">'+(LP.badge!==undefined?(LP.badge&&i===LP.badgeAt?'<span class="badge">'+LP.badge+'</span>':""):TIERS.length===3&&i===1?'<span class="badge">الأكثر طلباً</span>':"")+
+    '<span class="rd"></span><span class="tt"><b>'+unitName(t.q)+'</b><span>'+(t.sub||(t.q===1?(LP.bundle?esc(LP.bundle.contents):"بسعره"):t.q===2?"وحدة إلك ووحدة هدية":"إلك ولعائلتك"))+'</span>'+(sv?'<span class="save">توفّر '+money(sv)+' د.ع</span>':"")+'</span><span class="tp">'+(sv?'<s>'+money(W*t.q)+'</s>':"")+'<b>'+money(t.price)+'</b></span></button>'}).join("");
   $$(".tier").forEach(function(b){b.addEventListener("click",function(){SEL=+b.dataset.i;paintCart()})});
   var ns=nextSave(), full=EXTRA.length>=3;
   $("#pickH").textContent=EXTRA.length?"تريد تضيف عطر ثاني بعد؟":"تريد تضيف عطر ثاني ويّا طلبك؟";
   $("#pickL").innerHTML=full?"وصلت أعلى عدد إضافات بالطلب.":'كل عطر تضيفه ينزل المجموع. العطر الجاي ينزله <b class="n">'+money(ns)+'</b> د.ع إضافية.';
   $("#picks").style.display=full?"none":"flex";
-  $("#picks").innerHTML=Object.keys(CAT).filter(function(s){return BASE.indexOf(s)<0}).map(function(s){var c=CAT[s];return'<button type="button" class="pk" data-add="'+s+'"><img loading="lazy" src="'+c.img+'" alt=""><b>'+esc(c.name)+'</b><span>'+esc(c.line)+'</span><div class="pp n">'+money(c.price)+'</div><span class="ad">+ ضيف وخصم '+money(ns)+'</span></button>'}).join("");
+  $("#picks").innerHTML=Object.keys(CAT).filter(function(s){return BASE.indexOf(s)<0&&!CAT[s].noPick}).map(function(s){var c=CAT[s];return'<button type="button" class="pk" data-add="'+s+'"><img loading="lazy" src="'+c.img+'" alt=""><b>'+esc(c.name)+'</b><span>'+esc(c.line)+'</span><div class="pp n">'+money(c.price)+'</div><span class="ad">+ ضيف وخصم '+money(ns)+'</span></button>'}).join("");
   $$("#picks [data-add]").forEach(function(b){b.addEventListener("click",function(){addExtra(b.dataset.add)})});
   $("#chosen").innerHTML=EXTRA.map(function(s,i){return'<span class="ch"><img src="'+CAT[s].img+'" alt="">'+esc(CAT[s].name)+'<button type="button" data-rm="'+i+'" aria-label="شيل">×</button></span>'}).join("");
   $$("[data-rm]").forEach(function(b){b.addEventListener("click",function(){EXTRA.splice(+b.dataset.rm,1);paintCart()})});
-  var mainLine=LP.bundle?'<div><span>'+esc(LP.bundle.rz)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(T.price)+'</span></div>':'<div><span>'+esc(LP.name)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(U*T.q)+'</span></div>';
+  var mainLine=LP.bundle?'<div><span>'+esc(LP.bundle.rz)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(W*T.q)+'</span></div>':'<div><span>'+esc(LP.name)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(U*T.q)+'</span></div>';
   var exLines=EXTRA.map(function(s){return'<div><span>'+esc(CAT[s].name)+'</span><span class="n">'+money(CAT[s].price)+'</span></div>'}).join("");
-  var shownDisc=LP.bundle?EXTRA.length*DISC[2]:d;
-  $("#osum").innerHTML=mainLine+exLines+(shownDisc?'<div class="sv"><span>الخصم ('+n+' عطور)</span><span class="n">−'+money(shownDisc)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
+  var shownDisc=LP.bundle?EXTRA.length*DISC[2]+W*T.q-T.price:d, wasAll=LP.bundle?W*T.q+exSum():sum(), saved=wasAll-total();
+  $("#osum").innerHTML=mainLine+exLines+(shownDisc?'<div class="sv"><span>'+(LP.bundle&&LP.bundle.was?"توفيرك":"الخصم ("+n+" عطور)")+'</span><span class="n">−'+money(shownDisc)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
   $("#hNow").textContent=money(total());
-  $("#hNote").innerHTML=(n<=(LP.bundle?2:1))?(LP.priceNote||"")+(LP.bundle?"":'<br>عطرين بخصم <b class="n">18,000</b> · 3 بخصم <b class="n">40,000</b>'):'<s class="was n">'+money(sum())+'</s>'+n+' عطور بالطلب · وفّرت <b class="n">'+money(d)+'</b>';
-  $("#stPr").textContent=money(total());$("#stLab").textContent=n<=(LP.bundle?2:1)?LP.name:n+" عطور · وفّرت "+money(d);
+  $("#hNote").innerHTML=(n<=BASE.length)?(LP.priceNote||"")+(LP.bundle?"":'<br>عطرين بخصم <b class="n">18,000</b> · 3 بخصم <b class="n">40,000</b>'):'<s class="was n">'+money(wasAll)+'</s>'+(LP.bundle?unitName(T.q)+(EXTRA.length?" + "+EXTRA.length+(EXTRA.length>1?" عطور":" عطر"):""):n+' عطور بالطلب')+' · وفّرت <b class="n">'+money(saved)+'</b>';
+  $("#stPr").textContent=money(total());$("#stLab").textContent=n<=BASE.length?LP.name:(LP.bundle?unitName(T.q):n+" عطور")+" · وفّرت "+money(saved);
 }
 paintCart();
 
@@ -265,7 +266,7 @@ function orderText(o){
 }
 function capiData(v,ids,n){function ck(k){var m=document.cookie.match(new RegExp("(?:^|; )"+k+"=([^;]*)"));return m?decodeURIComponent(m[1]):""}var fbc=ck("_fbc");if(!fbc&&SRC.fbclid)fbc="fb.1."+Date.now()+"."+SRC.fbclid;return {fbp:ck("_fbp"),fbc:fbc,ua:navigator.userAgent.slice(0,400),url:location.href.split("#")[0].slice(0,500),value:v,currency:"IQD",ids:ids,n:n}}
 function payload(o){if(!o.ref)o.ref=LP.code+"-"+Date.now().toString(36).toUpperCase();
-  return {kind:"order",page:LP.slug,ref:o.ref,name:o.name,phone:o.phone,governorate:o.governorate,summary:o.items.map(function(s){return CAT[s].name}).join(" + ")+(o.hair?" + "+hairName(o.hair):""),text:"#طلب_جديد "+o.ref+"\n"+orderText(o),capi:capiData(o.total+(o.hair?HAIR.price:0),o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),o.items.length)}}
+  return {kind:"order",page:LP.slug,ref:o.ref,name:o.name,phone:o.phone,governorate:o.governorate,summary:(LP.bundle?[LP.bundle.rz+(o.q>1?" × "+o.q:"")].concat(o.items.slice(BASE.length*o.q).map(function(s){return CAT[s].name})):o.items.map(function(s){return CAT[s].name})).join(" + ")+(o.hair?" + "+hairName(o.hair):""),text:"#طلب_جديد "+o.ref+"\n"+orderText(o),capi:capiData(o.total+(o.hair?HAIR.price:0),o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),o.items.length)}}
 function placeOrder(o){return relay(payload(o)).then(function(){track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),content_type:"product",value:o.total+(o.hair?HAIR.price:0),currency:"IQD",num_items:o.items.length},{eventID:o.ref})})}
 // مطابقة متقدمة: نعطي البكسل رقم الزبون واسمه ومحافظته لحظة «ثبّت»، والبكسل يشفّرهن بنفسه (SHA-256) قبل ما يطلعن
 var GOV_EN={"بغداد":"baghdad","البصرة":"basra","نينوى":"nineveh","أربيل":"erbil","النجف":"najaf","كربلاء":"karbala","بابل":"babil","ذي قار":"dhiqar","الأنبار":"anbar","ديالى":"diyala","صلاح الدين":"salahaddin","كركوك":"kirkuk","واسط":"wasit","ميسان":"maysan","الديوانية":"diwaniyah","المثنى":"muthanna","السليمانية":"sulaymaniyah","دهوك":"duhok","حلبجة":"halabja"};

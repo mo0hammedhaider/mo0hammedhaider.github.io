@@ -1,6 +1,6 @@
 /* محرّك صفحات باقات الجمعة البيضاء — go.aljassmi.shop/bf*
    مبني على محرّك الطلب المجرّب (engine.js): نفس النموذج والوسيط والبكسل، والسلّة هنا باقات:
-   باقة = سعرها · باقتين = −50,000 · 3 باقات = −90,000 فوق خصم الباقة نفسها.
+   باقة = سعرها · باقتين = خصم 8% من سعر باقة · 3 باقات = 15% من سعر باقة (مدوّر للألف)، فوق خصم الباقة نفسها.
    القواعد: بلا تواريخ ولا مدد، الندرة بالكمية، «قيمة المنتجات منفردة»، صور حقيقية بس. */
 (function(){
 "use strict";
@@ -17,7 +17,7 @@ var ICON={
   sndOff:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6"/></svg>',
   sndOn:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>'
 };
-var D2=BF.d2, D3=BF.d3, BD=BF.b, PF=BF.pf, ORDER_IDS=BF.order;
+var R2=BF.r2, R3=BF.r3, BD=BF.b, PF=BF.pf, ORDER_IDS=BF.order;
 var CAT={};ORDER_IDS.forEach(function(b){CAT[b]={name:BD[b].name,rz:BD[b].name,pid:"bf-"+b,price:BD[b].price,was:BD[b].was}});
 var ME=LP.bundle||null, HUB=!!LP.hub;
 document.documentElement.style.setProperty("--ac",LP.theme.ac);
@@ -30,10 +30,10 @@ function qty(){return TIERS[SEL].q}
 function items(){return [ME].concat(PART.slice(0,qty()-1))}
 function sum(){return items().reduce(function(a,b){return a+BD[b].was},0)}
 function bsum(){return items().reduce(function(a,b){return a+BD[b].price},0)}
-function xd(q){return q===2?D2:q===3?D3:0}
+function xd(q,p){if(p===undefined)p=bsum();var r=q===2?R2:q===3?R3:0;return Math.round(p/q*r/1000)*1000}
 function total(){return bsum()-xd(qty())}
 function disc(){return sum()-total()}
-function tierCalc(q){var its=[ME].concat(PART.slice(0,q-1)),w=0,p=0;its.forEach(function(b){w+=BD[b].was;p+=BD[b].price});return{its:its,was:w,total:p-xd(q),save:w-(p-xd(q)),extra:xd(q)}}
+function tierCalc(q){var its=[ME].concat(PART.slice(0,q-1)),w=0,p=0;its.forEach(function(b){w+=BD[b].was;p+=BD[b].price});return{its:its,was:w,total:p-xd(q,p),save:w-(p-xd(q,p)),extra:xd(q,p)}}
 function unitName(q){return q===1?"باقة واحدة":q===2?"باقتين":q+" باقات"}
 function names(its){return its.map(function(b){return BD[b].name}).join(" + ")}
 
@@ -49,19 +49,19 @@ A.push('<div class="ticker" aria-hidden="true"><div class="t">'+[0,1,2].map(func
 A.push('<header class="wrap hdr"><img src="../lp/logo.png" alt="الجسمي"><b>دار الجسمي للعطور</b></header>');
 
 if(HUB){
-  A.push('<section class="hero bfh"><div class="wrap"><div class="en">WHITE FRIDAY · باقات الجمعة البيضاء</div><h1>7 باقات… وتوفير فوق التوفير</h1><p class="tag">اختار باقتك، وإذا تاخذ باقتين أو 3 ينزل خصم إضافي.</p>'+
-    '<div class="ladder3"><div><small>باقة واحدة</small><b>سعرها الثابت</b></div><div class="mid"><small>باقتين</small><b class="n">−50,000</b><em>خصم إضافي</em></div><div><small>3 باقات</small><b class="n">−90,000</b><em>خصم إضافي</em></div></div>'+
-    '<p class="sub">الخصم الإضافي فوق خصم الباقة نفسها. كل باقة لأول 500 طلب، وكبار الشخصيات لأول 25 طلب. تجرب التستر قبل لا تدفع.</p>'+
+  A.push('<section class="hero bfh"><div class="wrap"><div class="en">WHITE FRIDAY · باقات الجمعة البيضاء</div><h1>'+ORDER_IDS.length+' باقات… وتوفير فوق التوفير</h1><p class="tag">اختار باقتك، وإذا تاخذ باقتين أو 3 ينزل خصم إضافي.</p>'+
+    '<div class="ladder3"><div><small>باقة واحدة</small><b>سعرها الثابت</b></div><div class="mid"><small>باقتين</small><b class="n">−8%</b><em>من سعر باقة</em></div><div><small>3 باقات</small><b class="n">−15%</b><em>من سعر باقة</em></div></div>'+
+    '<p class="sub">الخصم الإضافي فوق خصم الباقة نفسها. تجرب التستر قبل لا تدفع.</p>'+
     '<a class="cta" href="#bundles" data-go-s>شوف الباقات</a></div></section>');
-  A.push('<section class="sec" id="bundles"><div class="wrap reveal"><div class="kick">الباقات السبع</div><h2 class="h2">اختار اللي يشبهك</h2><p class="lead">«قيمة المنتجات منفردة» هي مجموع أسعار العطور لو تشتريها كل وحدة لحالها.</p></div><div class="wrap bgrid">'+ORDER_IDS.map(function(b){return bundleCard(b)}).join("")+'</div></section>');
+  A.push('<section class="sec" id="bundles"><div class="wrap reveal"><div class="kick">كل الباقات</div><h2 class="h2">اختار اللي يشبهك</h2><p class="lead">«قيمة المنتجات منفردة» هي مجموع أسعار العطور لو تشتريها كل وحدة لحالها.</p></div><div class="wrap bgrid">'+ORDER_IDS.map(function(b){return bundleCard(b)}).join("")+'</div></section>');
 }else{
   var B=BD[ME], sv=B.was-B.price;
   A.push('<section class="hero bfh"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
     '<div class="stage bf"><div class="halo"></div><div class="plinth"></div><img class="bfimg" src="../lp/bf/hero-'+ME+'.webp" alt="'+esc(LP.name)+'" fetchpriority="high"><div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
     '<p class="sub">'+LP.hero.sub+'</p>'+
-    '<div class="proof"><div class="pf scar"><b>'+(B.solo?"لأول <span class=\"n\">25</span> طلب بس":"لأول <span class=\"n\">500</span> طلب")+'</b><small>الكمية محدودة</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div></div>'+
+    '<div class="proof"><div class="pf scar"><b>السعر السابق <s class="n">'+money(B.was)+'</s></b><small>توفّر <span class="n">'+money(B.was-B.price)+'</span> د.ع</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div></div>'+
     '<div class="pricebox"><div class="now"><small>سعر الباقة</small><span class="n" id="hNow"></span> <span class="u">د.ع</span></div><div class="note" id="hNote"></div></div>'+
-    (B.solo?'':'<div class="ladder3 sm"><div><small>باقة</small><b class="n">'+money(B.price)+'</b></div><div class="mid"><small>باقتين</small><b class="n">−50,000</b><em>إضافية</em></div><div><small>3 باقات</small><b class="n">−90,000</b><em>إضافية</em></div></div>')+
+    (B.solo?'':'<div class="ladder3 sm"><div><small>باقة</small><b class="n">'+money(B.price)+'</b></div><div class="mid"><small>باقتين</small><b class="n">−'+money(xd(2,B.price*2))+'</b><em>إضافية</em></div><div><small>3 باقات</small><b class="n">−'+money(xd(3,B.price*3))+'</b><em>إضافية</em></div></div>')+
     '<a class="cta" href="#order" data-go>ثبّت باقتك <small>· تدفع عند الاستلام</small></a>'+
     '<div class="chips"><span class="chip">'+ICON.test+'جرّب التستر قبل الدفع</span><span class="chip">'+ICON.back+'ضمان 7 أيام</span><span class="chip">'+ICON.truck+'5,000 لكل العراق</span></div></div></section>');
 
@@ -88,7 +88,7 @@ if(HUB){
     '</div><div class="gbox"><h3>وبعد الاستلام، عندك 7 أيام</h3><ul><li>الاستبدال مفتوح وبأي فرع من فروع الدار، حتى لو طلبت أونلاين.</li><li>أول استبدال أو استرجاع بالتوصيل علينا.</li><li>نقبل فاتورة الفرع أو فاتورة التوصيل، أو حتى صورتها.</li></ul><div class="dl"><div><small>التوصيل</small><b class="n">5,000</b></div><div><small>بغداد</small><b>خلال 18 ساعة</b></div><div><small>المحافظات</small><b>24–48 ساعة</b></div></div></div></div></section>');
 
   // الطلب
-  A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">ثبّت باقتك</div><h2 class="h2">اختار عرضك</h2><p class="lead">'+(B.solo?'باقة واحدة لأول 25 طلب بس.':'باقتين بخصم إضافي <b class="n">50,000</b>، و3 باقات بخصم <b class="n">90,000</b>.')+'</p>'+
+  A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">ثبّت باقتك</div><h2 class="h2">اختار عرضك</h2><p class="lead">'+(B.solo?'باقة واحدة بسعر ثابت.':'باقتين بخصم إضافي <b class="n">8%</b> من سعر باقة، و3 باقات بخصم <b class="n">15%</b>.')+'</p>'+
     '<div class="tiers" id="tiers"></div>'+
     (B.solo?'':'<div class="build"><div class="pick-h" id="pickH"></div><p class="pick-l" id="pickL"></p><div class="bpicks" id="picks"></div></div>')+
     '<form class="form" id="form" novalidate><div class="f"><label for="nm">الاسم</label><input id="nm" autocomplete="name" placeholder="اسمك الكامل"><div class="em">اكتب اسمك</div></div>'+
@@ -100,9 +100,9 @@ if(HUB){
 
   // الأسئلة
   var FAQ=[["ما أكدر أشمّها من الموبايل… شلون أعرف إذا تعجبني؟","ما تحتاج تخمّن. المندوب يوصل ويّا تستر زجاجي، تجربه قدامه بدون ما تفتح علبة العطر. إذا ما ناسبك، ترفض الطلب بمكانه وما تدفع شي."],
-    ["شلون يشتغل خصم الباقتين والثلاث؟","كل باقة بسعرها الثابت، وإذا تاخذ باقتين ينزل المجموع 50,000 إضافية، و3 باقات 90,000 إضافية. الخصم فوق خصم الباقة نفسها، وتختار الباقات اللي تريدها."],
+    ["شلون يشتغل خصم الباقتين والثلاث؟","كل باقة بسعرها الثابت، وإذا تاخذ باقتين ينزل المجموع 8% من سعر باقة، و3 باقات 15% من سعر باقة. الخصم فوق خصم الباقة نفسها، وتختار الباقات اللي تريدها."],
     ["شنو يعني «قيمة المنتجات منفردة»؟","هي مجموع أسعار كل عطر ومنتج بالباقة لو تشتريها وحدة وحدة. الباقة أرخص منها."],
-    ["الباقة لشوكت؟","كل باقة لأول 500 طلب، وكبار الشخصيات لأول 25 طلب. إذا خلصت الكمية تنسد الباقة."],
+    ["الباقة لشوكت؟","الأسعار ثابتة طول عرض الجمعة البيضاء."],
     ["شوكت يوصلني؟ وبكم التوصيل؟","التوصيل 5,000 د.ع لكل المحافظات. ببغداد خلال 18 ساعة من تأكيد الطلب، وباقي المحافظات 24 إلى 48 ساعة. المندوب يتصل بيك قبل ما يوصل."],
     ["لازم أدفع هسه؟","لا. تدفع نقداً للمندوب بعد ما تجرب التستر. بعد ما ترسل الطلب نتصل بيك نأكد العنوان."]].concat(LP.faq||[]);
   A.push('<section class="sec" id="faq"><div class="wrap"><div class="kick">قبل لا تطلب</div><h2 class="h2">أسئلة تدور براسك</h2><div style="margin-top:14px">'+FAQ.map(function(q,i){return'<details class="qa"'+(i===0?" open":"")+'><summary>'+q[0]+'<i></i></summary><p>'+q[1]+'</p></details>'}).join("")+'</div><a class="cta" href="#order" data-go>ثبّت '+esc(LP.name)+'</a></div></section>');
@@ -137,7 +137,7 @@ function paintCart(){var T=TIERS[SEL],q=T.q,d=disc(),tot=total();
   $$(".tier").forEach(function(b){b.addEventListener("click",function(){SEL=+b.dataset.i;paintCart()})});
   if($("#picks")){
     $("#pickH").textContent=q===1?"تريد توفير أكثر؟":"اختار الباقة"+(q===3?"تين":"")+" "+(q===3?"الثانية والثالثة":"الثانية");
-    $("#pickL").innerHTML=q===1?'اضغط «باقتين» أو «3 باقات» فوق وتنزل عليك <b class="n">50,000</b> أو <b class="n">90,000</b> إضافية.':'اضغط على الباقات حتى تبدّل. لازم تختار <b class="n">'+(q-1)+'</b>.';
+    $("#pickL").innerHTML=q===1?'اضغط «باقتين» أو «3 باقات» فوق وينزل عليك خصم إضافي <b class="n">8%</b> أو <b class="n">15%</b> من سعر الباقة.':'اضغط على الباقات حتى تبدّل. لازم تختار <b class="n">'+(q-1)+'</b>.';
     $("#picks").style.display=q===1?"none":"grid";
     var best=-1,bid=null;ORDER_IDS.forEach(function(b){if(b===ME||BD[b].solo)return;var s=BD[b].was-BD[b].price;if(s>best){best=s;bid=b}});
     $("#picks").innerHTML=ORDER_IDS.filter(function(b){return b!==ME&&!BD[b].solo}).map(function(b){var on=PART.slice(0,q-1).indexOf(b)>=0,B2=BD[b];
