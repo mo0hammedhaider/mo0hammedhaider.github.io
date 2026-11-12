@@ -50,7 +50,7 @@ A.push('<header class="wrap hdr"><img src="../lp/logo.png" alt="الجسمي"><b
 
 if(HUB){
   A.push('<section class="hero bfh"><div class="wrap"><div class="en">WHITE FRIDAY · باقات الجمعة البيضاء</div><h1>'+ORDER_IDS.length+' باقات… وتوفير فوق التوفير</h1><p class="tag">اختار باقتك، وإذا تاخذ باقتين أو 3 ينزل خصم إضافي.</p>'+
-    '<div class="ladder3"><div><small>باقة واحدة</small><b>سعرها الثابت</b></div><div class="mid"><small>باقتين</small><b class="n">−8%</b><em>من سعر باقة</em></div><div><small>3 باقات</small><b class="n">−15%</b><em>من سعر باقة</em></div></div>'+
+    '<div class="ladder3"><div><small>باقة واحدة</small><b>سعرها الثابت</b></div><div class="mid"><small>باقتين</small><b>خصم إضافي</b><em>ينزل بالسلة</em></div><div><small>3 باقات</small><b>خصم أكبر</b><em>ينزل بالسلة</em></div></div>'+
     '<p class="sub">الخصم الإضافي فوق خصم الباقة نفسها. تجرب التستر قبل لا تدفع.</p>'+
     '<a class="cta" href="#bundles" data-go-s>شوف الباقات</a></div></section>');
   A.push('<section class="sec" id="bundles"><div class="wrap reveal"><div class="kick">كل الباقات</div><h2 class="h2">اختار اللي يشبهك</h2><p class="lead">«قيمة المنتجات منفردة» هي مجموع أسعار العطور لو تشتريها كل وحدة لحالها.</p></div><div class="wrap bgrid">'+ORDER_IDS.map(function(b){return bundleCard(b)}).join("")+'</div></section>');
@@ -88,7 +88,7 @@ if(HUB){
     '</div><div class="gbox"><h3>وبعد الاستلام، عندك 7 أيام</h3><ul><li>الاستبدال مفتوح وبأي فرع من فروع الدار، حتى لو طلبت أونلاين.</li><li>أول استبدال أو استرجاع بالتوصيل علينا.</li><li>نقبل فاتورة الفرع أو فاتورة التوصيل، أو حتى صورتها.</li></ul><div class="dl"><div><small>التوصيل</small><b class="n">5,000</b></div><div><small>بغداد</small><b>خلال 18 ساعة</b></div><div><small>المحافظات</small><b>24–48 ساعة</b></div></div></div></div></section>');
 
   // الطلب
-  A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">ثبّت باقتك</div><h2 class="h2">اختار عرضك</h2><p class="lead">'+(B.solo?'باقة واحدة بسعر ثابت.':'باقتين بخصم إضافي <b class="n">8%</b> من سعر باقة، و3 باقات بخصم <b class="n">15%</b>.')+'</p>'+
+  A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">ثبّت باقتك</div><h2 class="h2">اختار عرضك</h2><p class="lead">'+(B.solo?'باقة واحدة بسعر ثابت.':'باقتين بخصم إضافي، و3 باقات بخصم أكبر.')+'</p>'+
     '<div class="tiers" id="tiers"></div>'+
     (B.solo?'':'<div class="build"><div class="pick-h" id="pickH"></div><p class="pick-l" id="pickL"></p><div class="bpicks" id="picks"></div></div>')+
     '<form class="form" id="form" novalidate><div class="f"><label for="nm">الاسم</label><input id="nm" autocomplete="name" placeholder="اسمك الكامل"><div class="em">اكتب اسمك</div></div>'+
@@ -100,7 +100,7 @@ if(HUB){
 
   // الأسئلة
   var FAQ=[["ما أكدر أشمّها من الموبايل… شلون أعرف إذا تعجبني؟","ما تحتاج تخمّن. المندوب يوصل ويّا تستر زجاجي، تجربه قدامه بدون ما تفتح علبة العطر. إذا ما ناسبك، ترفض الطلب بمكانه وما تدفع شي."],
-    ["شلون يشتغل خصم الباقتين والثلاث؟","كل باقة بسعرها الثابت، وإذا تاخذ باقتين ينزل المجموع 8% من سعر باقة، و3 باقات 15% من سعر باقة. الخصم فوق خصم الباقة نفسها، وتختار الباقات اللي تريدها."],
+    ["شلون يشتغل خصم الباقتين والثلاث؟","كل باقة بسعرها الثابت، وإذا تاخذ باقتين ينزل عليك خصم إضافي، و3 باقات خصم أكبر، ويبين المبلغ بالسلة. الخصم فوق خصم الباقة نفسها، وتختار الباقات اللي تريدها."],
     ["شنو يعني «قيمة المنتجات منفردة»؟","هي مجموع أسعار كل عطر ومنتج بالباقة لو تشتريها وحدة وحدة. الباقة أرخص منها."],
     ["الباقة لشوكت؟","الأسعار ثابتة طول عرض الجمعة البيضاء."],
     ["شوكت يوصلني؟ وبكم التوصيل؟","التوصيل 5,000 د.ع لكل المحافظات. ببغداد خلال 18 ساعة من تأكيد الطلب، وباقي المحافظات 24 إلى 48 ساعة. المندوب يتصل بيك قبل ما يوصل."],
@@ -137,7 +137,7 @@ function paintCart(){var T=TIERS[SEL],q=T.q,d=disc(),tot=total();
   $$(".tier").forEach(function(b){b.addEventListener("click",function(){SEL=+b.dataset.i;paintCart()})});
   if($("#picks")){
     $("#pickH").textContent=q===1?"تريد توفير أكثر؟":"اختار الباقة"+(q===3?"تين":"")+" "+(q===3?"الثانية والثالثة":"الثانية");
-    $("#pickL").innerHTML=q===1?'اضغط «باقتين» أو «3 باقات» فوق وينزل عليك خصم إضافي <b class="n">8%</b> أو <b class="n">15%</b> من سعر الباقة.':'اضغط على الباقات حتى تبدّل. لازم تختار <b class="n">'+(q-1)+'</b>.';
+    $("#pickL").innerHTML=q===1?'اضغط «باقتين» أو «3 باقات» فوق وينزل عليك خصم إضافي، ويبين المبلغ تحت.':'اضغط على الباقات حتى تبدّل. لازم تختار <b class="n">'+(q-1)+'</b>.';
     $("#picks").style.display=q===1?"none":"grid";
     var best=-1,bid=null;ORDER_IDS.forEach(function(b){if(b===ME||BD[b].solo)return;var s=BD[b].was-BD[b].price;if(s>best){best=s;bid=b}});
     $("#picks").innerHTML=ORDER_IDS.filter(function(b){return b!==ME&&!BD[b].solo}).map(function(b){var on=PART.slice(0,q-1).indexOf(b)>=0,B2=BD[b];
