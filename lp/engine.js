@@ -221,7 +221,7 @@ paintCart();
 var orderSec=$("#order"),heroCta=$(".hero .cta"),inHero=true,inOrder=false;
 function stick(){$("#sticky").classList.add("show")}stick();
 new IntersectionObserver(function(e){inHero=e[0].isIntersecting;stick()}).observe(heroCta);
-new IntersectionObserver(function(e){inOrder=e[0].isIntersecting;stick()},{threshold:.05}).observe(orderSec);
+new IntersectionObserver(function(e){inOrder=e[0].isIntersecting;stick();if(inOrder)vcOnce()},{threshold:.05}).observe(orderSec);
 function bindGo(r){$$("[data-go]",r).forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();orderSec.scrollIntoView({behavior:"smooth"});if(!window.__ic){window.__ic=1;track("InitiateCheckout",{value:total(),currency:"IQD",content_ids:items().map(function(s){return CAT[s].pid})})}})})}
 bindGo(document);
 
@@ -237,7 +237,7 @@ var normPhone=function(v){var d=toEn(v).replace(/\D/g,"").replace(/^00964/,"").r
     else if(!/^07[3-9]/.test(v)){hint.textContent="الرقم لازم يبدي بـ07";hint.className="hint"}
     else{hint.textContent="✓ الرقم كامل";hint.className="hint ok";ph.closest(".f").classList.remove("err")}}
   ph.addEventListener("input",fix);ph.addEventListener("blur",fix);ph.addEventListener("paste",function(){setTimeout(fix,0)});
-  $("#nm").addEventListener("focus",function(){if(!window.__ic){window.__ic=1;track("InitiateCheckout",{value:total(),currency:"IQD"})}},{once:true});
+  $("#nm").addEventListener("focus",function(){track("CustomizeProduct",{value:total(),currency:"IQD"});if(!window.__ic){window.__ic=1;track("InitiateCheckout",{value:total(),currency:"IQD"})}},{once:true});
 })();
 function setErr(id,bad){$("#"+id).closest(".f").classList.toggle("err",bad);return bad}
 var ORDER=null;
@@ -306,7 +306,7 @@ function placeOrder(o){return relay(payload(o)).then(function(){track("Purchase"
 // مطابقة متقدمة: نعطي البكسل رقم الزبون واسمه ومحافظته لحظة «ثبّت»، والبكسل يشفّرهن بنفسه (SHA-256) قبل ما يطلعن
 var GOV_EN={"بغداد":"baghdad","البصرة":"basra","نينوى":"nineveh","أربيل":"erbil","النجف":"najaf","كربلاء":"karbala","بابل":"babil","ذي قار":"dhiqar","الأنبار":"anbar","ديالى":"diyala","صلاح الدين":"salahaddin","كركوك":"kirkuk","واسط":"wasit","ميسان":"maysan","الديوانية":"diwaniyah","المثنى":"muthanna","السليمانية":"sulaymaniyah","دهوك":"duhok","حلبجة":"halabja"};
 function matchUser(o){try{if(!window.fbq||typeof AJ_PIXEL==="undefined")return;var n=o.name.toLowerCase().split(/\s+/).filter(Boolean),u={ph:"964"+o.phone.slice(1),country:"iq"};if(n[0])u.fn=n[0];if(n.length>1)u.ln=n[n.length-1];if(GOV_EN[o.governorate])u.ct=GOV_EN[o.governorate];fbq("init",AJ_PIXEL,u)}catch(e){}}
-function track(ev,p,o){try{if(!window.fbq)return;var std=["Purchase","AddToCart","InitiateCheckout","ViewContent"];if(std.indexOf(ev)>=0)fbq("track",ev,p||{},o||{});else fbq("trackCustom",ev,p||{})}catch(e){}}
+function track(ev,p,o){try{if(!window.fbq)return;var std=["Purchase","AddToCart","InitiateCheckout","ViewContent","CustomizeProduct"];if(std.indexOf(ev)>=0)fbq("track",ev,p||{},o||{});else fbq("trackCustom",ev,p||{})}catch(e){}}
 
 /* ===== عدّاد حقيقي (زوار + طلبات هالصفحة) ===== */
 (function(){var sid;try{sid=sessionStorage.getItem("aj_sid")||Math.random().toString(36).slice(2,12);sessionStorage.setItem("aj_sid",sid)}catch(e){sid=Math.random().toString(36).slice(2,12)}
@@ -334,5 +334,7 @@ function track(ev,p,o){try{if(!window.fbq)return;var std=["Purchase","AddToCart"
       else{cx.fillStyle="rgba("+col+","+((mode==="embers"?.85:.6)*p.a)+")";cx.beginPath();cx.arc(p.x,p.y,p.r,0,7);cx.fill();if(mode==="embers"&&p.r>2){cx.fillStyle="rgba(255,200,120,"+(.25*p.a)+")";cx.beginPath();cx.arc(p.x,p.y,p.r*2.6,0,7);cx.fill()}}})
   })(t0)})();
 
-track("ViewContent",{content_ids:(LP.bundle?LP.bundle.items:[LP.slug]).map(function(s){return CAT[s].pid}),content_name:LP.name,content_type:"product",value:total(),currency:"IQD"});
+/* قمع صفحة الهبوط (2026-11-23): ViewContent = وصل لقسم الطلب (مو تحميل الصفحة)، CustomizeProduct = بدا يكتب اسمه */
+function vcOnce(){if(window.__vc)return;window.__vc=1;track("ViewContent",{content_ids:(LP.bundle?LP.bundle.items:[LP.slug]).map(function(s){return CAT[s].pid}),content_name:LP.name,content_type:"product",value:total(),currency:"IQD"})}
+if(inOrder)vcOnce();
 })();
