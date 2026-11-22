@@ -254,9 +254,9 @@ $("#form").addEventListener("submit",function(e){e.preventDefault();
 var pick=null,SENT=null,AUTO=null,LDI=null;
 var HAIR_WHY=["يحمي شعرك من حرارة الشسوار والشمس","خالي من الكحول، وبدون كبريتات أو سيليكون أو بارابين","بيه زيت الأرغان وزيت جوز الهند للترطيب","فيتامين E و B5، وكيراتين نانو يرجّع اللمعة","خفيف ومو دهني: إذا تشسور هواي يغنيك عن الكريمات الثقيلة"];
 function showUpsell(){
-  $("#upSheet").innerHTML='<h3>قبل لا نثبّت الطلب… هذا عرض بس إلك</h3><p class="lead">ضيف عطر شعر لنفس الطلب ونفس التوصيل بـ<b class="n" style="color:var(--br)">28,000</b> بدل <s class="n">58,000</s>.</p><ul class="hwhy">'+HAIR_WHY.map(function(w){return"<li>"+w+"</li>"}).join("")+'</ul><div class="hairs">'+
+  $("#upSheet").innerHTML='<h3>شعرك يستحق حماية من حرارة الشسوار… وريحة عطر</h3><p class="lead">قبل لا نثبّت طلبك: عطر شعر ويّا نفس الطلب ونفس التوصيل بـ<b class="n" style="color:var(--br)">28,000</b> بدل <s class="n">58,000</s>.</p><ul class="hwhy">'+HAIR_WHY.map(function(w){return"<li>"+w+"</li>"}).join("")+'</ul><div class="hairs">'+
    HAIR.items.map(function(h){return'<button class="hair" data-id="'+h.id+'"><img src="../lp/hair-'+h.id+'.jpg" alt="عطر شعر '+h.name+'"><b>'+h.name+'</b><small>'+h.d+'</small><div class="hp"><s>'+money(HAIR.was)+'</s><span>'+money(HAIR.price)+'</span></div></button>'}).join("")+
-   '</div><button class="add" id="addH" disabled>اختار عطر الشعر</button><button class="skip" id="skipH">ثبّت الطلب بدونه</button>';
+   '</div><button class="add2" id="addH" disabled>اختار عطر الشعر من فوك</button><button class="add" id="skipH">ثبّت الطلب بدونه</button>';
   $("#up").classList.add("open");document.body.style.overflow="hidden";
   $$(".hair").forEach(function(b){b.addEventListener("click",function(){pick=b.dataset.id;$$(".hair").forEach(function(o){o.classList.toggle("on",o===b)});var h=HAIR.items.filter(function(x){return x.id===pick})[0];$("#addH").disabled=false;$("#addH").textContent="ضيف "+h.name+" وثبّت الطلب"})});
   $("#addH").addEventListener("click",function(){finish(pick)});$("#skipH").addEventListener("click",function(){finish(null)});
@@ -284,19 +284,19 @@ function srcLine(){var a=SRC.utm_content||SRC.utm_campaign;return a?"الإعل�
 function hairName(id){var h=HAIR.items.filter(function(x){return x.id===id})[0];return "عطر شعر "+(h?h.name:id)}
 function orderText(o){
   var B=LP.bundle, q=o.q, ex=o.extra, hp=o.hair?HAIR.price:0, all=o.total+hp;
-  var L=["━━━━━━━━━━━━"];
-  L.push(B?"🛍 العرض: "+B.rz+" · "+unitName(q)+" ("+B.contents+")":"🛍 الطلب: "+LP.name+" · "+unitName(q));
-  if(ex.length)L.push("➕ عطور مضافة: "+ex.map(function(s){return CAT[s].name}).join(" + "));
-  if(o.disc)L.push("🏷 الخصم: "+money(o.disc)+" ("+o.items.length+" عطور)");
-  if(o.hair)L.push("➕ إضافة على نفس الطلب: "+hairName(o.hair)+" بـ28,000 بدل 58,000");
-  L.push("💰 المجموع: "+money(all)+" + توصيل "+money(SHIP)+" = "+money(all+SHIP)+" د.ع (دفع عند الاستلام)","━━━━━━━━━━━━","",
-    "الاسم: "+o.name,"الرقم: "+o.phone,"العنوان: "+o.governorate+" "+o.address,"","تفاصيل الطلب:");
-  L.push("المنتج: "+(B?B.rz:CAT[LP.slug].rz)+"، العدد: "+q);
-  var cnt={};ex.forEach(function(s){cnt[s]=(cnt[s]||0)+1});Object.keys(cnt).forEach(function(s){L.push("المنتج: "+CAT[s].rz+"، العدد: "+cnt[s])});
+  function rz(s){var c=CAT[s];return (c&&(c.rz||c.name))||s}
+  function alf(n){return n%1000===0?(n/1000)+(n/1000>2&&n/1000<11?" الاف":" الف"):money(n)}
+  var P=[(B?(B.rz||LP.name)+(B.contents?" ("+B.contents+")":""):rz(LP.slug)||LP.name)+(q>1?" × "+q:"")];
+  var cnt={};ex.forEach(function(s){cnt[s]=(cnt[s]||0)+1});Object.keys(cnt).forEach(function(s){P.push(rz(s)+(cnt[s]>1?" × "+cnt[s]:""))});
+  if(o.hair)P.push(hairName(o.hair)+" (بـ28 الف بدل 58)");
+  var prod=P.join(" + ");
   var rzBase=(B?TIERS[o.sel].price:U*q)+ex.reduce(function(a,s){return a+CAT[s].price},0), rzDisc=rzBase-o.total;
-  if(rzDisc)L.push("الخصم: "+money(rzDisc));
-  if(o.hair)L.push("المنتج: "+hairName(o.hair)+" · بـ28 ألف بدل 58 (عرض الصفحة)، العدد: 1");
-  L.push("السعر: "+money(all)+" وتوصيل "+money(SHIP),"","ملاحظة: تجربة العطر من خلال التيستر فقط","المصدر: صفحة "+LP.name,srcLine());
+  var L=["الاسم : "+o.name,"الرقم : "+o.phone,"العنوان : "+o.governorate+" "+o.address,"——",
+    "تفاصيل الطلب : طلب جديد من صفحة الهبوط",
+    "المنتج : "+prod,
+    "السعر : "+alf(all)+(rzDisc>0?" (بعد خصم "+alf(rzDisc)+")":"")+" والتوصيل "+alf(SHIP),
+    "——","ملاحظة : تجربة العطر من خلال التيستر فقط والتأكد من سلامة الطلب",prod,
+    "","━━━━━━━━━━━━","للفريق بس (لا ينسخ):","المجموع عند الاستلام: "+money(all+SHIP)+" د.ع · "+unitName(q),"المصدر: صفحة "+LP.name,srcLine()];
   return L.join("\n");
 }
 function capiData(v,ids,n){function ck(k){var m=document.cookie.match(new RegExp("(?:^|; )"+k+"=([^;]*)"));return m?decodeURIComponent(m[1]):""}var fbc=ck("_fbc");if(!fbc&&SRC.fbclid)fbc="fb.1."+Date.now()+"."+SRC.fbclid;return {fbp:ck("_fbp"),fbc:fbc,ua:navigator.userAgent.slice(0,400),url:location.href.split("#")[0].slice(0,500),value:v,currency:"IQD",ids:ids,n:n}}

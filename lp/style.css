@@ -276,6 +276,8 @@ section{position:relative}
 .hp span{font-family:M;font-weight:700;font-size:18px;color:var(--br)}
 .add{width:100%;height:56px;border-radius:16px;background:var(--br);color:var(--iv);font-weight:900;font-size:18px;margin-top:16px}
 .add[disabled]{opacity:.45}
+.add2{width:100%;height:48px;border-radius:14px;background:transparent;border:2px solid var(--br);color:var(--br);font-weight:800;font-size:15.5px;margin-top:14px}
+.add2[disabled]{opacity:.45}
 .skip{display:block;margin:10px auto 0;font-size:14px;color:var(--muted);text-decoration:underline}
 .done h3,.done p{text-align:center}
 
