@@ -11,6 +11,9 @@ var money=function(n){return Number(n).toLocaleString("en-US")};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
 var ME=CAT[LP.slug]||{};
 var ICON={
+  pin:'<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  tel:'<svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+  ig:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8"/></svg>',
   test:'<svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg>',
   cash:'<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
   back:'<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>',
@@ -42,9 +45,19 @@ A.push('<div class="ticker" aria-hidden="true"><div class="t">'+[0,1,2].map(func
 A.push('<header class="wrap hdr"><img src="../lp/logo.png" alt="الجسمي"><b>دار الجسمي للعطور</b></header>');
 
 // الهيرو
+var V2=!!LP.v2; // 2026-11-22: ترتيب مبسّط (الهيبة أولاً): سعر بلوحات + 3 ضمانات تحت السعر + ختم الضمان الذهبي + دليل
+var SEAL='<div class="seal" aria-label="الضمان الذهبي 7 أيام"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6DE8D"/><stop offset=".5" stop-color="#D4A845"/><stop offset="1" stop-color="#A97A22"/></linearGradient></defs><path fill="url(#sg)" d="'+(function(){var d="",n=16;for(var i=0;i<n*2;i++){var r=i%2?50:59,a=Math.PI*i/n-Math.PI/2;d+=(i?"L":"M")+(60+r*Math.cos(a)).toFixed(1)+" "+(60+r*Math.sin(a)).toFixed(1)}return d+"Z"})()+'"/><circle cx="60" cy="60" r="43" fill="none" stroke="rgba(255,248,225,.75)" stroke-width="1.5" stroke-dasharray="2 3"/></svg><div class="st"><small>الضمان الذهبي</small><b class="n">7</b><small>أيام</small></div></div>';
 var COMP=!!(LP.bundle&&LP.img&&LP.img.btl);
 var bt=LP.bundle&&!COMP?LP.bundle.items.map(function(s,i){return'<img class="btl b'+(i+1)+'" src="'+CAT[s].img+'" alt="عطر '+CAT[s].name+'">'}).join(""):'<img class="btl" src="'+LP.img.btl+'" alt="عطر '+LP.name+'" fetchpriority="high">';
-A.push('<section class="hero"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
+var RT=LP.rating?'<a class="rt" href="#rev"><span class="st">★★★★★</span><b class="n">'+LP.rating.avg+'</b><span>· <b class="n">'+LP.rating.n+'</b> تقييم من زبائن حقيقيين</span></a>':"";
+if(V2) A.push('<section class="hero v2"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1>'+RT+'<p class="tag">'+LP.hero.tag+'</p>'+
+  '<div class="stage'+(COMP?" comp":LP.bundle?" pair":"")+'"><canvas class="fx"></canvas><div class="halo"></div><div class="plinth"></div>'+bt+SEAL+'<div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
+  '<p class="sub">'+LP.hero.sub+'</p>'+
+  '<div class="pp" id="pp"></div>'+
+  '<a class="cta" href="#order" data-go>اطلب هسه، <small>تدفع عند الاستلام</small></a>'+
+  '<div class="g3">'+[[ICON.test,"توصلك ويّا تيستر","تشمها كبال المندوب قبل لا تدفع"],[ICON.back,"7 أيام تبدّل أو ترجّع","حتى لو فاتحها"],[ICON.cash,"الدفع عند الاستلام","ما تدفع ولا دينار هسه"]].map(function(g){return'<div class="g"><i>'+g[0]+'</i><b>'+g[1]+'</b><span>'+g[2]+'</span></div>'}).join("")+'</div>'+
+  '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div></div></section>');
+else A.push('<section class="hero"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
   '<div class="stage'+(COMP?" comp":LP.bundle?" pair":"")+'"><canvas class="fx"></canvas><div class="halo"></div><div class="plinth"></div>'+bt+'<div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
   '<p class="sub">'+LP.hero.sub+'</p>'+
   '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div>'+
@@ -52,41 +65,58 @@ A.push('<section class="hero"><div class="wrap"><div class="en">'+esc(LP.en)+'</
   '<a class="cta" href="#order" data-go>اطلب هسه <small>· تدفع عند الاستلام</small></a>'+
   '<div class="chips"><span class="chip">'+ICON.test+'جرّب التستر قبل الدفع</span><span class="chip">'+ICON.back+'ضمان 7 أيام</span><span class="chip">'+ICON.truck+'5,000 لكل العراق</span></div></div></section>');
 
+// V2: شنو بالباقة وشوكت تستخدم كل عطر
+if(V2&&LP.inBox) A.push('<section class="sec" id="box"><div class="wrap"><div class="reveal"><div class="kick">شنو بالباقة؟</div><h2 class="h2">'+(LP.inBoxH||"كل عطر وشوكت تستخدمه")+'</h2>'+(LP.inBoxLead?'<p class="lead">'+LP.inBoxLead+'</p>':"")+'</div><div class="ibx">'+
+  LP.inBox.map(function(c){return'<div class="ib reveal"><div class="im">'+(c.img?'<img loading="lazy" src="'+c.img+'" alt="'+esc(c.name)+'">':"")+'</div><div class="tx"><b>'+esc(c.name)+'</b><em>'+esc(c.role)+'</em>'+(c.smell?'<p class="wh"><span>شلون ريحته؟</span>'+c.smell+'</p>':"")+'<p class="wh"><span>شوكت تستخدمه؟</span>'+c.when+'</p>'+(c.when2&&c.when2.length?'<div class="moms">'+c.when2.map(function(n){return"<span>"+n+"</span>"}).join("")+'</div>':"")+(c.notes&&c.notes.length?'<div class="notes"><i>بيه</i>'+c.notes.map(function(n){return"<span>"+n+"</span>"}).join("")+'</div>':"")+'</div></div>'}).join("")+
+  '</div></div></section>');
+
 // الريلز (ناس حقيقيين) — بعد الهيرو مباشرة لأن الوجه الحقيقي أقوى دليل
-if(LP.reels&&LP.reels.length) A.push('<section class="sec dark" id="reels"><div class="wrap reveal"><div class="kick">ناس حقيقيين، مو ممثلين</div><h2 class="h2">'+(LP.reelsH||"شوف شنو كالوا عنه")+'</h2></div><div class="rail" id="rail">'+
-  LP.reels.map(function(r){return'<div class="reel"><video muted loop playsinline preload="none" poster="'+r[0]+'.jpg" src="'+r[0]+'.mp4"></video><button class="snd" aria-label="الصوت">'+ICON.sndOff+'</button><div class="lab"><b>'+esc(r[1])+'</b><span>'+esc(r[2])+'</span></div></div>'}).join("")+
+function reelHtml(r){return'<div class="reel"><video muted loop playsinline preload="none" poster="'+r[0]+'.jpg" src="'+r[0]+'.mp4"></video><button class="snd" aria-label="الصوت">'+ICON.sndOff+'</button><div class="lab"><b>'+esc(r[1])+'</b><span>'+esc(r[2])+'</span></div></div>'}
+if(LP.reels&&LP.reels.length) A.push('<section class="sec dark" id="reels"><div class="wrap reveal"><div class="kick">'+(LP.reelsK||"ناس حقيقيين، مو ممثلين")+'</div><h2 class="h2">'+(LP.reelsH||"شوف شنو كالوا عنه")+'</h2></div><div class="rail" id="rail">'+
+  LP.reels.map(reelHtml).join("")+
   '</div><p class="hint">اضغط على الفيديو حتى تسمع الصوت</p></section>');
 
 // رحلة الرشّة
-A.push('<section class="sec" id="smell"><div class="wrap"><div class="reveal"><div class="kick">'+(LP.journeyK||"شلون رائحته؟")+'</div><h2 class="h2">'+(LP.journeyH||"رشّة وحدة… وثلاث مراحل")+'</h2><p class="lead">'+(LP.journeyLead||"اضغط على كل مرحلة وشوف شنو تشم.")+'</p></div><div class="journey">'+
+if(!V2) A.push('<section class="sec" id="smell"><div class="wrap"><div class="reveal"><div class="kick">'+(LP.journeyK||"شلون رائحته؟")+'</div><h2 class="h2">'+(LP.journeyH||"رشّة وحدة… وثلاث مراحل")+'</h2><p class="lead">'+(LP.journeyLead||"اضغط على كل مرحلة وشوف شنو تشم.")+'</p></div><div class="journey">'+
   LP.journey.map(function(j,i){return'<div class="stage3 reveal'+(i===0?" on":"")+'" data-i="'+i+'"><div class="tm">'+(j.img?'<img src="'+j.img+'" alt="">':'<i></i>')+'<span>'+j.t+'</span></div><div><b>'+j.h+'</b><p>'+j.p+'</p><div class="notes">'+j.notes.map(function(n){return"<span>"+n+"</span>"}).join("")+'</div></div></div>'}).join("")+
   '</div>'+(LP.img.ing?'<div class="ingimg reveal"><img loading="lazy" src="'+LP.img.ing+'" alt="مكونات '+esc(LP.name)+'"></div>':"")+'</div></section>');
 
 // القصة
-A.push('<section class="sec dark" id="story"><div class="wrap reveal"><div class="kick">'+(LP.story.k||"القصة")+'</div><h2 class="h2">'+LP.story.h+'</h2><div class="story">'+
+if(!V2) A.push('<section class="sec dark" id="story"><div class="wrap reveal"><div class="kick">'+(LP.story.k||"القصة")+'</div><h2 class="h2">'+LP.story.h+'</h2><div class="story">'+
   LP.story.ps.map(function(p,i){return i===LP.story.qAt?'<p class="q">'+p+'</p>':"<p>"+p+"</p>"}).join("")+'</div>'+
   '<div class="facts">'+LP.story.facts.map(function(f){return"<div><small>"+f[0]+"</small><b>"+f[1]+"</b></div>"}).join("")+'</div></div></section>');
 
 // اختبار المطابقة
-A.push('<section class="sec" id="quiz"><div class="wrap"><div class="reveal"><div class="kick">30 ثانية</div><h2 class="h2">هل '+esc(LP.quizName||LP.name)+(LP.bundle?' باقتك؟':' عطرك؟')+'</h2><p class="lead">3 أسئلة وتعرف. وإذا مو إلك، نكلك بصراحة شنو يناسبك أكثر.</p></div><div class="quiz reveal" id="qz"></div><p class="disc">النتيجة حسب أجوبتك وشخصية كل عطر من وصف الدار.</p></div></section>');
+if(!V2) A.push('<section class="sec" id="quiz"><div class="wrap"><div class="reveal"><div class="kick">30 ثانية</div><h2 class="h2">هل '+esc(LP.quizName||LP.name)+(LP.bundle?' باقتك؟':' عطرك؟')+'</h2><p class="lead">3 أسئلة وتعرف. وإذا مو إلك، نكلك بصراحة شنو يناسبك أكثر.</p></div><div class="quiz reveal" id="qz"></div><p class="disc">النتيجة حسب أجوبتك وشخصية كل عطر من وصف الدار.</p></div></section>');
 
 // يناسبك / ما يناسبك
-A.push('<section class="sec" style="padding-top:0"><div class="wrap reveal"><div class="kick">بصراحة</div><h2 class="h2">'+(LP.bundle?'لِمَن هذي الباقة؟':'لِمَن هذا العطر؟')+'</h2><div class="fit"><div class="c yes"><h3>يناسبك إذا</h3><ul>'+LP.fit.yes.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div><div class="c no"><h3>ما ننصحك بيه إذا</h3><ul>'+LP.fit.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div></div></div></section>');
+if(!V2) A.push('<section class="sec" style="padding-top:0"><div class="wrap reveal"><div class="kick">بصراحة</div><h2 class="h2">'+(LP.bundle?'لِمَن هذي الباقة؟':'لِمَن هذا العطر؟')+'</h2><div class="fit"><div class="c yes"><h3>يناسبك إذا</h3><ul>'+LP.fit.yes.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div><div class="c no"><h3>ما ننصحك بيه إذا</h3><ul>'+LP.fit.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div></div></div></section>');
+
+// V2: الدليل — فيديوهات الضمان والفرع الحقيقي
+if(V2&&LP.proof&&LP.proof.length) A.push('<section class="sec dark" id="proof"><div class="wrap reveal"><div class="kick">'+(LP.proofK||"ليش تطمّن؟")+'</div><h2 class="h2">'+(LP.proofH||"ضمان حقيقي، ومحل حقيقي")+'</h2>'+(LP.proofLead?'<p class="lead">'+LP.proofLead+'</p>':"")+'</div><div class="rail">'+
+  LP.proof.map(reelHtml).join("")+'</div><p class="hint">اضغط على الفيديو حتى تسمع الصوت</p>'+
+  '<div class="wrap"><div class="gbox"><h3>وبعد الاستلام، عندك 7 أيام</h3><ul><li>تبدّل أو ترجّع حتى لو فاتح العطر.</li><li>الاستبدال بأي فرع من فروع الدار، حتى لو طلبت أونلاين.</li><li>أول استبدال أو استرجاع بالتوصيل علينا.</li></ul></div></div></section>');
 
 // الآراء
-if((LP.shots&&LP.shots.length)||(LP.quotes&&LP.quotes.length)) A.push('<section class="sec" id="rev" style="background:#f3ebe2"><div class="wrap reveal"><div class="kick">رسائل زبائن حقيقيين</div><h2 class="h2">'+(LP.revH||"شنو كتبولنا بعد ما وصلهم")+'</h2></div>'+
-  (LP.shots&&LP.shots.length?'<div class="shots">'+LP.shots.map(function(s){return'<div class="shot"><img loading="lazy" src="'+s+'" alt="رسالة زبون"></div>'}).join("")+'</div>':"")+
+if((LP.shots&&LP.shots.length)||(LP.quotes&&LP.quotes.length)) A.push('<section class="sec" id="rev" style="background:#f3ebe2"><div class="wrap reveal"><div class="kick">'+(LP.revK||"رسائل زبائن حقيقيين")+'</div><h2 class="h2">'+(LP.revH||"شنو كتبولنا بعد ما وصلهم")+'</h2>'+(LP.rating?'<div class="rsum"><b class="n">'+LP.rating.avg+'</b><div><span class="st">★★★★★</span><small>من <b class="n">'+LP.rating.n+'</b> تقييم على الباقة</small></div></div>':"")+(V2&&!LP.shotsN&&LP.shots&&LP.shots.length>2?'<p class="lead" style="margin-top:10px">اسحب وشوف <b class="n">'+LP.shots.length+'</b> رسالة مثل ما وصلتنا ←</p>':"")+'</div>'+
+  (V2&&LP.revVids&&LP.revVids.length?'<div class="rail">'+LP.revVids.map(reelHtml).join("")+'</div>':"")+
+  (V2&&LP.shotsN&&LP.shots&&LP.shots.length?'<div class="wrap"><div class="sgrid" id="sgrid">'+LP.shots.map(function(s,i){return'<div class="shot"'+(i>=LP.shotsN?' hidden':'')+'><img loading="lazy" src="'+s+'" alt="رسالة زبون"></div>'}).join("")+'</div>'+(LP.shots.length>LP.shotsN?'<button class="more" id="moreS">للمزيد (<span class="n">'+(LP.shots.length-LP.shotsN)+'</span> رسالة ثانية)</button>':"")+'</div>':
+  LP.shots&&LP.shots.length?'<div class="shots">'+LP.shots.map(function(s){return'<div class="shot"><img loading="lazy" src="'+s+'" alt="رسالة زبون"></div>'}).join("")+'</div>':"")+
   '<div class="wrap"><div class="quotes" id="quotes"></div><button class="more" id="moreQ">اعرض كل الرسائل</button><p class="disc">الرسائل منقولة مثل ما وصلتنا. الأسماء والصور بالسكرينات منشورة بموافقة أصحابها.</p></div></section>');
 
 // الأمان
-A.push('<section class="sec dark" id="safe"><div class="wrap reveal"><div class="kick">المخاطرة علينا</div><h2 class="h2">ما تدفع على شي ما جرّبته</h2><div class="steps">'+
+if(!V2) A.push('<section class="sec dark" id="safe"><div class="wrap reveal"><div class="kick">المخاطرة علينا</div><h2 class="h2">ما تدفع على شي ما جرّبته</h2><div class="steps">'+
   [["1","تطلب من هنا بدقيقة","بس اسمك ورقمك وعنوانك. ما تدفع شي هسه."],["2","يوصلك المندوب ويّا تستر","تجرب العطر قدامه قبل لا تفتح علبتك."],["3","تدفع إذا عجبك","ما عجبك؟ ترجّعه بمكانه وما تدفع ولا دينار."]].map(function(s){return'<div class="st3"><div class="k">'+s[0]+'</div><div><b>'+s[1]+'</b><p>'+s[2]+'</p></div></div>'}).join("")+
   '</div><div class="gbox"><h3>وبعد الاستلام، عندك 7 أيام</h3><ul><li>الاستبدال مفتوح وبأي فرع من فروع الدار، حتى لو طلبت أونلاين.</li><li>أول استبدال أو استرجاع بالتوصيل علينا.</li><li>نقبل فاتورة الفرع أو فاتورة التوصيل، أو حتى صورتها.</li></ul><div class="dl"><div><small>التوصيل</small><b class="n">5,000</b></div><div><small>بغداد</small><b>خلال 18 ساعة</b></div><div><small>المحافظات</small><b>24–48 ساعة</b></div></div></div></div></section>');
 
 // الطلب + مكوّن العرض
+// V2: وين تلكانا — محل حقيقي + رقم + انستغرام
+if(V2&&LP.contact){var C=LP.contact;A.push('<section class="sec" id="where"><div class="wrap reveal"><div class="kick">مو بس صفحة</div><h2 class="h2">محل حقيقي، تكدر تزوره</h2></div>'+(LP.whereReel?'<div class="rail one">'+reelHtml(LP.whereReel)+'</div>':"")+'<div class="wrap"><div class="places">'+
+  C.places.map(function(p){return'<a class="place" target="_blank" rel="noopener" href="https://maps.google.com/?q='+encodeURIComponent("دار الجسمي للعطور "+p[1])+'"><i>'+ICON.pin+'</i><span><b>'+esc(p[0])+'</b><em>'+esc(p[1])+'</em><small>'+esc(p[2])+'</small></span></a>'}).join("")+'</div>'+
+  '<div class="cbtn"><a href="tel:'+C.phone+'"><i>'+ICON.tel+'</i><span>اتصل بينا<b class="n">'+C.phone+'</b></span></a><a target="_blank" rel="noopener" href="'+C.ig+'"><i>'+ICON.ig+'</i><span>شوفنا بالانستغرام<b>@'+esc(C.igName)+'</b></span></a></div></div></section>')}
 A.push('<section class="order dark" id="order"><div class="wrap"><div class="kick">اطلب</div><h2 class="h2">'+(LP.bundle?"ثبّت العرض":"اختار عرضك")+'</h2><p class="lead">'+(LP.orderLead||'عطرين بخصم <b class="n">18,000</b>، و3 بخصم <b class="n">40,000</b>. وحدة إلك، والباقي هدية لناس تحبهم.')+'</p>'+
   '<div class="tiers" id="tiers"></div>'+
-  '<div class="build"><div class="pick-h" id="pickH"></div><p class="pick-l" id="pickL"></p><div class="picks" id="picks"></div><div class="chosen" id="chosen"></div></div>'+
+  '<div class="build"'+(LP.noExtras?' hidden':'')+'><div class="pick-h" id="pickH"></div><p class="pick-l" id="pickL"></p><div class="picks" id="picks"></div><div class="chosen" id="chosen"></div></div>'+
   '<form class="form" id="form" novalidate><div class="f"><label for="nm">الاسم</label><input id="nm" autocomplete="name" placeholder="اسمك الكامل"><div class="em">اكتب اسمك</div></div>'+
   '<div class="f"><label for="ph">رقم الموبايل</label><input id="ph" inputmode="numeric" autocomplete="tel" placeholder="07xxxxxxxxx" dir="ltr" style="text-align:right"><div class="hint" id="phHint"></div><div class="em" id="phMsg">اكتب رقم عراقي صحيح يبدي بـ07</div></div>'+
   '<div class="f"><label for="gv">المحافظة</label><select id="gv"><option value="">اختار المحافظة</option></select><div class="em">اختار المحافظة</div></div>'+
@@ -101,10 +131,11 @@ var FAQ=[["ما أكدر أشمّه من الموبايل… شلون أعرف �
   ["شلون يشتغل خصم العطرين والثلاثة؟","أي عطرين من الدار بنفس الطلب ينزل المجموع 18,000، و3 عطور ينزل 40,000. تكدر تاخذ نفس العطر مرتين (واحد هدية) أو تخلط."],
   ["شوكت يوصلني؟ وبكم التوصيل؟","التوصيل 5,000 د.ع لكل المحافظات. ببغداد خلال 18 ساعة من تأكيد الطلب، وباقي المحافظات 24 إلى 48 ساعة. المندوب يتصل بيك قبل ما يوصل."],
   ["لازم أدفع هسه؟","لا. تدفع نقداً للمندوب بعد ما تجرب التستر. بعد ما ترسل الطلب نتصل بيك نأكد العنوان."]]).filter(function(f){return !(LP.bundle&&f[0].indexOf("خصم العطرين")>=0)});
+if(LP.faqOnly) FAQ=LP.faq;
 A.push('<section class="sec" id="faq"><div class="wrap"><div class="kick">قبل لا تطلب</div><h2 class="h2">أسئلة تدور براسك</h2><div style="margin-top:14px">'+FAQ.map(function(q,i){return'<details class="qa"'+(i===0?" open":"")+'><summary>'+q[0]+'<i></i></summary><p>'+q[1]+'</p></details>'}).join("")+'</div><a class="cta" href="#order" data-go>اطلب '+esc(LP.name)+'</a></div></section>');
 
-A.push('<footer class="foot"><div class="wrap"><img src="../lp/logo-light.png" alt="الجسمي"><b>دار الجسمي للعطور</b><p>العطر تجربة، مو اختيار.</p><div class="others">'+(window.PAGES||[]).filter(function(p){return p[0]!==LP.slug}).map(function(p){return'<a href="../'+p[0]+'/">'+p[1]+'</a>'}).join("")+'</div></div></footer>');
-A.push('<div class="sticky" id="sticky"><div class="in"><div class="pr"><small id="stLab">'+esc(LP.name)+'</small><b><span id="stPr"></span> <small>د.ع</small></b></div><a class="go" href="#order" data-go>اطلب هسه</a></div></div><div class="modal" id="up"><div class="sheet" id="upSheet"></div></div>');
+A.push('<footer class="foot"><div class="wrap"><img src="../lp/logo-light.png" alt="الجسمي"><b>دار الجسمي للعطور</b><p>العطر تجربة، مو اختيار.</p>'+(LP.contact?'<p class="fc">فرع المنصور: مقابل مول المنصور<br>الشركة الرئيسية: الكرادة خارج، مقابل نادي الهندية<br><a href="tel:'+LP.contact.phone+'" class="n">'+LP.contact.phone+'</a> · <a href="'+LP.contact.ig+'" target="_blank" rel="noopener">انستغرام</a></p>':"")+'<div class="others">'+(window.PAGES||[]).filter(function(p){return p[0]!==LP.slug}).map(function(p){return'<a href="../'+p[0]+'/">'+p[1]+'</a>'}).join("")+'</div></div></footer>');
+A.push('<div class="sticky" id="sticky"><div class="in"><div class="pr"><small id="stLab">'+esc(LP.name)+'</small><b><span id="stPr"></span> <small>د.ع</small></b></div><a class="go" href="#order" data-go>'+(V2?'اطلب هسه<small>تدفع عند الاستلام</small>':'اطلب هسه')+'</a></div></div><div class="modal" id="up"><div class="sheet" id="upSheet"></div></div>');
 document.getElementById("app").innerHTML=A.join("");
 
 /* ===== التفاعل ===== */
@@ -122,6 +153,7 @@ $$(".reel").forEach(function(el){el.addEventListener("click",function(){var v=$(
 $$(".stage3").forEach(function(el){el.addEventListener("click",function(){$$(".stage3").forEach(function(o){o.classList.toggle("on",o===el)})})});
 
 // الآراء
+if($("#moreS"))$("#moreS").addEventListener("click",function(){$$("#sgrid .shot").forEach(function(e){e.hidden=false});this.remove()});
 if($("#quotes")){var showN=4,Q=LP.quotes||[];
   var paintQ=function(){$("#quotes").innerHTML=Q.slice(0,showN).map(function(q){return'<div class="qt"><div class="st">★★★★★</div><p>«'+esc(q[0])+'»</p><div class="w"><span>زبون من زبائن الجسمي</span>'+(q[1]?"<em>"+esc(q[1])+"</em>":"")+'</div></div>'}).join("");
     $("#moreQ").style.display=showN>=Q.length?"none":"block";$("#moreQ").textContent="اعرض كل الرسائل ("+Q.length+")"};
@@ -155,7 +187,7 @@ function paintQuiz(){var box=$("#qz");if(qi<QZ.length){var Z=QZ[qi];
   bindGo(box);$$("[data-add]",box).forEach(function(b){b.addEventListener("click",function(){addExtra(b.dataset.add);$("#order").scrollIntoView({behavior:"smooth"})})});
   track("QuizDone",{match:pct,best:best});
 }
-paintQuiz();
+if($("#qz"))paintQuiz();
 
 /* ===== الخيارات + إضافة عطور ثانية ===== */
 function addExtra(s){if(EXTRA.length>=3)return;EXTRA.push(s);paintCart();track("AddToCart",{content_ids:[CAT[s].pid],value:CAT[s].price,currency:"IQD"})}
@@ -176,8 +208,11 @@ function paintCart(){var n=items().length,d=disc(),T=TIERS[SEL];
   var exLines=EXTRA.map(function(s){return'<div><span>'+esc(CAT[s].name)+'</span><span class="n">'+money(CAT[s].price)+'</span></div>'}).join("");
   var shownDisc=LP.bundle?EXTRA.length*DISC[2]+W*T.q-T.price:d, wasAll=LP.bundle?W*T.q+exSum():sum(), saved=wasAll-total();
   $("#osum").innerHTML=mainLine+exLines+(shownDisc?'<div class="sv"><span>'+(LP.bundle&&LP.bundle.was?"توفيرك":"الخصم ("+n+" عطور)")+'</span><span class="n">−'+money(shownDisc)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
-  $("#hNow").textContent=money(total());
-  $("#hNote").innerHTML=(n<=BASE.length)?(LP.priceNote||"")+(LP.bundle?"":'<br>عطرين بخصم <b class="n">18,000</b> · 3 بخصم <b class="n">40,000</b>'):'<s class="was n">'+money(wasAll)+'</s>'+(LP.bundle?unitName(T.q)+(EXTRA.length?" + "+EXTRA.length+(EXTRA.length>1?" عطور":" عطر"):""):n+' عطور بالطلب')+' · وفّرت <b class="n">'+money(saved)+'</b>';
+  if($("#pp")){$("#pp").innerHTML=TIERS.map(function(t,i){var sv=W*t.q-t.price;return'<button type="button" class="pcard'+(i===SEL?" on":"")+'" data-i="'+i+'">'+(LP.badge&&i===LP.badgeAt?'<span class="badge">'+LP.badge+'</span>':"")+
+      '<span class="pl"><b>'+unitName(t.q)+'</b><small>'+(t.sub||"")+'</small></span><span class="pv">'+(sv&&!V2?'<s class="n">'+money(W*t.q)+'</s>':"")+'<span class="big"><span class="n">'+money(t.price)+'</span> <small>د.ع</small></span>'+(sv&&V2?'<span class="was">سابقاً <s class="n">'+money(W*t.q)+'</s></span>':"")+(t.q>1?'<span class="per">الباقة الوحدة بـ<b class="n">'+money(t.price/t.q)+'</b></span>':"")+'</span>'+(sv?'<span class="sv">توفّر <b class="n">'+money(sv)+'</b> د.ع</span>':"")+'</button>'}).join("");
+    $$("#pp .pcard").forEach(function(b){b.addEventListener("click",function(){SEL=+b.dataset.i;paintCart()})})}
+  if($("#hNow"))$("#hNow").textContent=money(total());
+  if($("#hNote"))$("#hNote").innerHTML=(n<=BASE.length)?(LP.priceNote||"")+(LP.bundle?"":'<br>عطرين بخصم <b class="n">18,000</b> · 3 بخصم <b class="n">40,000</b>'):'<s class="was n">'+money(wasAll)+'</s>'+(LP.bundle?unitName(T.q)+(EXTRA.length?" + "+EXTRA.length+(EXTRA.length>1?" عطور":" عطر"):""):n+' عطور بالطلب')+' · وفّرت <b class="n">'+money(saved)+'</b>';
   $("#stPr").textContent=money(total());$("#stLab").textContent=n<=BASE.length?LP.name:(LP.bundle?unitName(T.q):n+" عطور")+" · وفّرت "+money(saved);
 }
 paintCart();
