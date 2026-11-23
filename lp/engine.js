@@ -59,11 +59,11 @@ if(V2) A.push('<section class="hero v2"><div class="wrap"><div class="en">'+esc(
   '<div class="pp" id="pp"></div>'+
   '<a class="cta" href="#order" data-go>اطلب هسه، <small>تدفع عند الاستلام</small></a>'+
   '<div class="g3">'+[[ICON.test,"توصلك ويّا تيستر","تشمها كبال المندوب قبل لا تدفع"],[ICON.back,"7 أيام تبدّل أو ترجّع","حتى لو فاتحها"],[ICON.cash,"الدفع عند الاستلام","ما تدفع ولا دينار هسه"]].map(function(g){return'<div class="g"><i>'+g[0]+'</i><b>'+g[1]+'</b><span>'+g[2]+'</span></div>'}).join("")+'</div>'+
-  '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div></div></section>');
+  '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div></div></section>');
 else A.push('<section class="hero"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
   '<div class="stage'+(COMP?" comp":LP.bundle?" pair":"")+'"><canvas class="fx"></canvas><div class="halo"></div><div class="plinth"></div>'+bt+'<div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
   '<p class="sub">'+LP.hero.sub+'</p>'+
-  '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div>'+
+  '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div>'+
   '<div class="pricebox"><div class="now"><small>السعر</small><span class="n" id="hNow"></span> <span class="u">د.ع</span></div><div class="note" id="hNote"></div></div>'+
   '<a class="cta" href="#order" data-go>اطلب هسه <small>· تدفع عند الاستلام</small></a>'+
   '<div class="chips"><span class="chip">'+ICON.test+'جرّب التستر قبل الدفع</span><span class="chip">'+ICON.back+'ضمان 7 أيام</span><span class="chip">'+ICON.truck+'5,000 لكل العراق</span></div></div></section>');
@@ -332,7 +332,7 @@ function track(ev,p,o){if(TEST){try{console.log("[TEST] بكسل:",ev)}catch(e){
 /* ===== عدّاد حقيقي (زوار + طلبات هالصفحة) ===== */
 (function(){var sid;try{sid=sessionStorage.getItem("aj_sid")||Math.random().toString(36).slice(2,12);sessionStorage.setItem("aj_sid",sid)}catch(e){sid=Math.random().toString(36).slice(2,12)}
   function ping(){if(TEST)return;fetch(RELAY+"?a=ping&p="+LP.slug+"&s="+encodeURIComponent(sid)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)return;
-    if(j.orders>=20){$("#ordersN").textContent=money(j.orders);$("#ordersPill").hidden=false}
+    // 2026-11-24 بطلب محمد: ما نظهر عدد الطلبات اللي انباعت أبداً
     if(j.now>=3){$("#liveNow").textContent=j.now;$("#live").hidden=false}}).catch(function(){})}
   ping();setInterval(function(){if(!document.hidden)ping()},60000)})();
 

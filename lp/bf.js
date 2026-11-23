@@ -59,7 +59,7 @@ if(HUB){
   A.push('<section class="hero bfh"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
     '<div class="stage bf"><div class="halo"></div><div class="plinth"></div><img class="bfimg" src="../lp/bf/hero-'+ME+'.webp" alt="'+esc(LP.name)+'" fetchpriority="high"><div class="spec">'+LP.spec.map(function(s){return"<span>"+s+"</span>"}).join("")+'</div></div>'+
     '<p class="sub">'+LP.hero.sub+'</p>'+
-    '<div class="proof"><div class="pf scar"><b>السعر السابق <s class="n">'+money(B.was)+'</s></b><small>توفّر <span class="n">'+money(B.was-B.price)+'</span> د.ع</small></div><div class="pf" id="ordersPill" hidden><span class="dot"></span><b>تثبّت <span class="n" id="ordersN"></span> طلب من هالصفحة</b></div></div>'+
+    '<div class="proof"><div class="pf scar"><b>السعر السابق <s class="n">'+money(B.was)+'</s></b><small>توفّر <span class="n">'+money(B.was-B.price)+'</span> د.ع</small></div></div>'+
     '<div class="pricebox"><div class="now"><small>سعر الباقة</small><span class="n" id="hNow"></span> <span class="u">د.ع</span></div><div class="note" id="hNote"></div></div>'+
     (B.solo?'':'<div class="ladder3 sm"><div><small>باقة</small><b class="n">'+money(B.price)+'</b></div><div class="mid"><small>باقتين</small><b class="n">−'+money(xd(2,B.price*2))+'</b><em>إضافية</em></div><div><small>3 باقات</small><b class="n">−'+money(xd(3,B.price*3))+'</b><em>إضافية</em></div></div>')+
     '<a class="cta" href="#order" data-go>ثبّت باقتك <small>· تدفع عند الاستلام</small></a>'+
@@ -247,7 +247,7 @@ function track(ev,p,o){try{if(!window.fbq)return;var std=["Purchase","AddToCart"
 /* ===== عدّاد حقيقي (زوار + طلبات هالصفحة) ===== */
 (function(){var sid;try{sid=sessionStorage.getItem("aj_sid")||Math.random().toString(36).slice(2,12);sessionStorage.setItem("aj_sid",sid)}catch(e){sid=Math.random().toString(36).slice(2,12)}
   function ping(){fetch(RELAY+"?a=ping&p="+LP.slug+"&s="+encodeURIComponent(sid)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)return;
-    if(j.orders>=20){$("#ordersN").textContent=money(j.orders);$("#ordersPill").hidden=false}
+    /* 2026-11-24: ما نظهر عدد الطلبات */
     if(j.now>=3){}}).catch(function(){})}
   ping();setInterval(function(){if(!document.hidden)ping()},60000)})();
 
