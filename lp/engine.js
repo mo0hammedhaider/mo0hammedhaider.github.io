@@ -269,9 +269,11 @@ function showCheck(){clearTimeout(AUTO);
   $("#phEdit").addEventListener("click",function(){ORDER=null;$("#up").classList.remove("open");document.body.style.overflow="";var i=$("#ph");i.focus();i.select&&i.select()});
 }
 function showUpsell(){var h=HAIR.items.filter(function(x){return x.id===UPH})[0];
-  $("#upSheet").innerHTML='<div class="ok1">✓ رقمك تأكد</div><h3>تضيف عطر شعر ويّا طلبك؟</h3>'+
-   '<div class="up1"><img src="../lp/hair-'+h.id+'.jpg" alt="عطر شعر '+h.name+'"><div><b>عطر شعر '+h.name+'</b><small>منعش ونظيف، يحمي شعرك من حرارة الشسوار وبدون كحول.</small><div class="hp"><s class="n">'+money(HAIR.was)+'</s><span class="n">'+money(HAIR.price)+'</span> <em>د.ع · نفس التوصيل</em></div></div></div>'+
-   '<button class="add" id="addH">إي، ضيفه لطلبي</button><button class="skip" id="skipH">لا شكراً، ثبّت طلبي</button>';
+  // 2026-11-24 بطلب محمد: الزر الكبير = الاستمرار بدون عطر الشعر، والإضافة خيار صغير تحته (حتى محد يتلخبط ويطلع)
+  $("#upSheet").innerHTML='<div class="ok1">✓ رقمك تأكد</div>'+
+   '<button class="add" id="skipH">استمرار بدون عطر شعر</button>'+
+   '<p class="up0">أو ضيف ويّا طلبك، بنفس التوصيل:</p>'+
+   '<div class="up1"><img src="../lp/hair-'+h.id+'.jpg" alt="عطر شعر '+h.name+'"><div class="tx"><b>عطر شعر '+h.name+'</b><small>منعش، يحمي شعرك من حرارة الشسوار وبدون كحول.</small><div class="hp"><s class="n">'+money(HAIR.was)+'</s><span class="n">'+money(HAIR.price)+'</span> <em>د.ع</em></div></div><button class="ad2" id="addH">+ ضيفه</button></div>';
   $("#addH").addEventListener("click",function(){finish(UPH)});$("#skipH").addEventListener("click",function(){finish(null)});
   clearTimeout(AUTO);AUTO=setTimeout(function(){finish(null)},90000);
 }
@@ -357,4 +359,6 @@ function track(ev,p,o){if(TEST){try{console.log("[TEST] بكسل:",ev)}catch(e){
 function vcOnce(){if(window.__vc)return;window.__vc=1;track("ViewContent",{content_ids:(LP.bundle?LP.bundle.items:[LP.slug]).map(function(s){return CAT[s].pid}),content_name:LP.name,content_type:"product",value:total(),currency:"IQD"})}
 if(inOrder)vcOnce();
 if(TEST)(function(){function a(){var b=document.createElement("div");b.className="testpill";b.textContent="وضع تجربة: ما ينرسل طلب";document.body.appendChild(b)}document.body?a():document.addEventListener("DOMContentLoaded",a)})();
+// وضع التجربة فقط: ?test=1&step=up يفتح خطوة تأكيد الرقم مباشرة (للمعاينة على التلفون)
+if(TEST&&/[?&]step=up(&|$)/.test(location.search)){ORDER={name:"تجربة",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total()};SENT=null;showCheck()}
 })();
