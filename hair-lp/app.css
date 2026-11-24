@@ -192,6 +192,7 @@ section{position:relative}
 .ib .for{font-size:11px;font-weight:700;background:var(--br);color:var(--iv);padding:2px 8px;border-radius:99px}
 .ib em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:1px}
 .ib .wh{font-size:13.5px;line-height:1.55;color:#5d4a38;margin-top:4px}
+.ib .vb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--br);background:#f3ebe2;border:1px solid var(--line);padding:2px 10px;border-radius:99px;margin-top:6px}
 .ib .wh span{display:none;font-size:12px;font-weight:900;color:var(--br)}
 
 /* الضمان */

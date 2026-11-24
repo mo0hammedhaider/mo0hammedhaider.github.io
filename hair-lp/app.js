@@ -34,6 +34,8 @@ function bagdadDate(ts){try{var f=new Intl.DateTimeFormat("en-GB",{timeZone:"Asi
 
 /* ===== العرض: كل باقة بيها مجموعات رائحة جاهزة (config.sets) ===== */
 function scentList(){return(C.scents&&C.scents[P.scents_key])||[]}
+function scentShow(){return(C.scents_show&&C.scents_show[P.scents_key])||scentList()}
+function pageTag(s){return((C.scent_tag||{})[P.scents_key]||{})[s]||""}
 function setsOf(n){var S=(C.sets&&C.sets[P.scents_key]&&C.sets[P.scents_key][String(n)])||[];
   if(!S.length){var L=scentList(),a=[];for(var i=0;i<n;i++)a.push(L[i%L.length]||"شيك");S=[{label:"",scents:a}]}return S}
 function curSet(n){n=n||state.bundle;var S=setsOf(n),i=Math.min(state.opt[n]||0,S.length-1);return S[i]}
@@ -41,7 +43,7 @@ function img(s){var im=(window.SCENT_IMG||{})[s]||"pk-chic";return'<img src="'+H
 function mini(sc){return'<span class="mini">'+sc.map(img).join("")+"</span>"}
 function forTag(s){var F=C.scent_for||{};return F[s]?(F[s]==="f"?P.for_f:P.for_m):""}
 function saving(n){var pr=price(n),old=Number(C.old_price_single||0);return launch()&&old*n>pr?old*n-pr:Math.max(0,price(1)*n-pr)}
-function subOf(n,cs){if(n===1){var s=cs.scents[0];return[forTag(s),(C.scent_descriptions||{})[s]].filter(Boolean).join(" · ")}
+function subOf(n,cs){if(n===1){var s=cs.scents[0];return[pageTag(s)||forTag(s),(C.scent_vibe||{})[s]].filter(Boolean).join(" · ")}
   return(cs.label?cs.label+" · ":"")+money(perBottle(n))+" للقنينة"}
 function opsHTML(n){var S=setsOf(n);if(S.length<2)return"";return'<p>'+esc(P.pick)+'</p><div class="grid">'+S.map(function(o,i){var isOn=i===(state.opt[n]||0),lb=n===1?subOf(1,o):o.label;
   return'<button type="button" class="op'+(isOn?" on":"")+'" data-n="'+n+'" data-i="'+i+'" aria-pressed="'+isOn+'">'+mini(o.scents)+'<span class="ol">'+(lb?"<b>"+esc(lb)+"</b>":"")+esc(o.scents.join(" + "))+'</span><span class="ck"></span></button>'}).join("")+"</div>"}
@@ -66,11 +68,11 @@ function countUp(el,to){if(!el||matchMedia("(prefers-reduced-motion:reduce)").ma
   (function f(t){var k=Math.min(1,(t-t0)/500),v=from+(to-from)*(1-Math.pow(1-k,3));el.textContent=money(Math.round(v/500)*500)+" د.ع";if(k<1)requestAnimationFrame(f);else el.textContent=money(to)+" د.ع"})(t0)}
 
 /* ===== الروائح ===== */
-function renderScents(){var L=scentList(),sec=$("scentsSec");if(!L.length){sec.hidden=true;return}sec.hidden=false;
-  var D=C.scent_descriptions||{},h="";
-  L.forEach(function(s){var t=forTag(s),im=(window.SCENT_G||{})[s]||"g-chic";
+function renderScents(){var L=scentShow(),sec=$("scentsSec");if(!L.length){sec.hidden=true;return}sec.hidden=false;
+  var D=C.scent_descriptions||{},V=C.scent_vibe||{},h="";
+  L.forEach(function(s){var t=pageTag(s),im=(window.SCENT_G||{})[s]||"g-chic";
     h+='<div class="ib"><div class="im"><img src="'+HB+'hair-lp/img/'+im+'.webp" alt="'+esc(s)+'" width="540" height="675" loading="lazy"></div><div class="tx"><div class="nm"><b>'+esc(s)+"</b>"+(t?'<span class="for">'+esc(t)+"</span>":"")+"</div>"+
-      (D[s]?'<p class="wh"><span>الرائحة</span>'+esc(D[s])+"</p>":"")+"</div></div>"});
+      (V[s]?'<span class="vb">'+esc(V[s])+"</span>":"")+(D[s]?'<p class="wh">'+esc(D[s])+"</p>":"")+"</div></div>"});
   $("scents").innerHTML=h;var x=$("scents");if(x.classList.contains("in")){x.classList.remove("in");void x.offsetWidth;x.classList.add("in")}}
 
 /* ===== الآراء: بس من config.reviews (نصوص حقيقية، ماكو مخترعة) ===== */
