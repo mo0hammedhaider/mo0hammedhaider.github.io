@@ -13,6 +13,9 @@ c.innerHTML='<div><span>رقم الطلب</span><b class="num">'+esc(o.order_id)
   '<div><span>العنوان</span><b>'+esc(o.governorate+"، "+o.area)+'</b></div>'+
   '<div class="tot"><span>'+(o.page==="women"?"تدفعين":"تدفع")+' عند الاستلام</span><b class="num">'+money(o.total)+' د.ع</b></div>';
 c.hidden=false;
+var w=document.getElementById("wa"),g=document.getElementById("waGo");
+if(w&&g){g.href="https://wa.me/9647760060015?text="+encodeURIComponent("هلا، هذا تأكيد طلبي من صفحة معالج الشعر ✅\nرقم الطلب: "+o.order_id+"\nالاسم: "+(o.name||""));w.hidden=false;
+  g.addEventListener("click",function(){try{window.fbq&&fbq("track","Contact",{content_name:"wa_confirm"})}catch(e){}})}
 var key="hair_px_"+o.order_id;try{if(localStorage.getItem(key))return}catch(e){}
 function fire(){if(!window.fbq||!window.AJ_PIXEL)return false;
   /* المطابقة المتقدمة انطت ويا أول init بالـhead (window.AJ_AM) */

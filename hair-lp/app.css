@@ -385,3 +385,38 @@ body.lock{overflow:hidden}
 @keyframes hr{0%,12%{stroke-dashoffset:1;opacity:.7}42%,86%{stroke-dashoffset:0;opacity:.7}96%,100%{stroke-dashoffset:0;opacity:0}}
 @keyframes hl{0%,40%{stroke-dashoffset:1.1;opacity:0}44%{opacity:.9}70%{stroke-dashoffset:-.1;opacity:.9}74%,100%{stroke-dashoffset:-.1;opacity:0}}
 @media(prefers-reduced-motion:reduce){.hfx .hb path,.hfx .hs path,.hfx .hl path{animation:none;opacity:0}.hfx .hr path{animation:none;stroke-dashoffset:0}}
+
+/* v5.3: أيقونات البطاقات + الضمان الذهبي + التركيبة + المقارنة */
+.g3 .ci{color:var(--iv)}
+.g3 .gold{border-color:rgba(201,150,47,.55);background:linear-gradient(180deg,#fff8ea,var(--card))}
+.g3 .gold .ci{background:var(--gold);color:#fff}
+.g3 .gold b{color:#8a6418}
+.g3 .gd{font-weight:900;color:var(--gold)!important}
+.igs{display:grid;gap:12px;margin-top:16px}
+.ig{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.igh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.igh .ci{width:34px;height:34px;padding:7px}
+.igh b{font-weight:900;font-size:18px;color:var(--br)}
+.ir{padding:9px 0;border-top:1px solid var(--line)}
+.ir b{font-size:15px;font-weight:700;color:var(--br)}
+.ir p{font-size:14px;line-height:1.7;color:var(--body);margin-top:2px}
+.ig .src{color:#8a6418}
+.cmp{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cmp .ch,.cmp .cr{display:grid;grid-template-columns:62px 1fr 1fr;gap:8px;padding:11px 12px;align-items:start}
+.cmp .ch{background:var(--deep);color:var(--iv);font-weight:900;font-size:13px}
+.cmp .cr+.cr{border-top:1px solid var(--line)}
+.cmp .cl{font-weight:900;font-size:13px;color:var(--br)}
+.cmp .cy,.cmp .cn{font-size:13px;line-height:1.55;display:flex;gap:5px}
+.cmp .cy{color:var(--okt);font-weight:700}.cmp .cn{color:var(--muted)}
+.cmp i{font-style:normal;font-weight:900;flex:none}.cmp .cy i{color:var(--ok)}.cmp .cn i{color:var(--bad)}
+
+/* صفحة الشكر: تأكيد بالواتساب */
+.thx .wa{margin-top:16px;background:#eaf6ee;border:1px solid #bfe3cb;border-radius:var(--r);padding:16px;text-align:center}
+.thx .wai{display:flex;width:46px;height:46px;margin:0 auto 8px;border-radius:50%;background:#25D366;color:#fff;padding:10px}
+.thx .wa svg{display:block;width:100%;height:100%}
+.thx .wa b{display:block;font-size:17px;font-weight:900;color:#1d6b3a}
+.thx .wa p{font-size:14px;line-height:1.75;color:#3d5a46;margin-top:6px}
+.thx .wab{display:flex;align-items:center;justify-content:center;gap:9px;height:56px;margin-top:14px;border-radius:16px;background:#25D366;color:#fff;font-weight:900;font-size:17px;text-decoration:none;box-shadow:0 8px 20px rgba(37,211,102,.3)}
+.thx .wab svg{width:24px;height:24px;flex:none}
+
+.hcard .hq b{font-weight:900;font-size:17px}

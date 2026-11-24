@@ -32,7 +32,7 @@ function headsLeft(){if(state.heads!==null)return state.heads;return Number(C.sp
 function giftOn(){return headsLeft()>0}
 function bagdadDate(ts){try{var f=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Baghdad",day:"numeric",month:"numeric"}).formatToParts(new Date(ts)),o={};f.forEach(function(p){o[p.type]=p.value});return o.day+" شهر "+o.month}catch(e){var d=new Date(ts);return d.getDate()+" شهر "+(d.getMonth()+1)}}
 
-/* ===== العرض: كل باقة بيها مجموعات ريحة جاهزة (config.sets) ===== */
+/* ===== العرض: كل باقة بيها مجموعات رائحة جاهزة (config.sets) ===== */
 function scentList(){return(C.scents&&C.scents[P.scents_key])||[]}
 function setsOf(n){var S=(C.sets&&C.sets[P.scents_key]&&C.sets[P.scents_key][String(n)])||[];
   if(!S.length){var L=scentList(),a=[];for(var i=0;i<n;i++)a.push(L[i%L.length]||"شيك");S=[{label:"",scents:a}]}return S}
@@ -45,7 +45,7 @@ function subOf(n,cs){if(n===1){var s=cs.scents[0];return[forTag(s),(C.scent_desc
   return(cs.label?cs.label+" · ":"")+money(perBottle(n))+" للقنينة"}
 function opsHTML(n){var S=setsOf(n);if(S.length<2)return"";return'<p>'+esc(P.pick)+'</p><div class="grid">'+S.map(function(o,i){var isOn=i===(state.opt[n]||0),lb=n===1?subOf(1,o):o.label;
   return'<button type="button" class="op'+(isOn?" on":"")+'" data-n="'+n+'" data-i="'+i+'" aria-pressed="'+isOn+'">'+mini(o.scents)+'<span class="ol">'+(lb?"<b>"+esc(lb)+"</b>":"")+esc(o.scents.join(" + "))+'</span><span class="ck"></span></button>'}).join("")+"</div>"}
-/* بطاقات الكمية بسيطة: عنوان + سعر بس. تغيير الريحة صار داخل الاستمارة («غيّري») حتى ما يتشتت الزبون */
+/* بطاقات الكمية بسيطة: عنوان + سعر بس. تغيير الرائحة صار داخل الاستمارة («غيّري») حتى ما يتشتت الزبون */
 function renderBundles(){var h="",old=Number(C.old_price_single||0),L=launch();
   [1,2,3].forEach(function(n){var pr=price(n),on=state.bundle===n,cs=curSet(n),badge="",sv=saving(n);
     if(n===2)badge='<span class="badge">الأكثر طلباً</span>';
@@ -70,7 +70,7 @@ function renderScents(){var L=scentList(),sec=$("scentsSec");if(!L.length){sec.h
   var D=C.scent_descriptions||{},h="";
   L.forEach(function(s){var t=forTag(s),im=(window.SCENT_G||{})[s]||"g-chic";
     h+='<div class="ib"><div class="im"><img src="'+HB+'hair-lp/img/'+im+'.webp" alt="'+esc(s)+'" width="540" height="675" loading="lazy"></div><div class="tx"><div class="nm"><b>'+esc(s)+"</b>"+(t?'<span class="for">'+esc(t)+"</span>":"")+"</div>"+
-      (D[s]?'<p class="wh"><span>الريحة</span>'+esc(D[s])+"</p>":"")+"</div></div>"});
+      (D[s]?'<p class="wh"><span>الرائحة</span>'+esc(D[s])+"</p>":"")+"</div></div>"});
   $("scents").innerHTML=h;var x=$("scents");if(x.classList.contains("in")){x.classList.remove("in");void x.offsetWidth;x.classList.add("in")}}
 
 /* ===== الآراء: بس من config.reviews (نصوص حقيقية، ماكو مخترعة) ===== */
