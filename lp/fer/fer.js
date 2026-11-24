@@ -121,6 +121,16 @@ X.init=function(api){var $=api.$,$$=api.$$;
   if(gal)gal.addEventListener("scroll",function(){var f=gal.children,best=0,bd=1e9,mid=gal.getBoundingClientRect().left+gal.clientWidth/2;
     for(var i=0;i<f.length;i++){var r=f[i].getBoundingClientRect(),d=Math.abs(r.left+r.width/2-mid);if(d<bd){bd=d;best=i}}
     dots.forEach(function(d,i){d.classList.toggle("on",i===best)})},{passive:true});
+
+  // رمشة الفهد: جفنين ينزلون ويصعدون فوك العيون (fer.css .lid)، كل 3–6 ثواني ومرات رمشتين
+  var st=$(".stage.cine");
+  if(st&&!RM&&st.animate){
+    var lids=["l","r"].map(function(k){var e=document.createElement("i");e.className="lid "+k;e.setAttribute("aria-hidden","true");st.appendChild(e);return e});
+    var K=[{clipPath:"inset(0 0 100% 0)"},{clipPath:"inset(0 0 0 0)",offset:.38},{clipPath:"inset(0 0 0 0)",offset:.55},{clipPath:"inset(0 0 100% 0)"}];
+    var blink=function(){if(!document.hidden)lids.forEach(function(e){e.animate(K,{duration:260,easing:"ease-in-out"})})};
+    var loop=function(){blink();if(Math.random()<.25)setTimeout(blink,340);setTimeout(loop,3000+Math.random()*3200)};
+    setTimeout(loop,2300);
+  }
 };
 window.LPX=X;
 })();
