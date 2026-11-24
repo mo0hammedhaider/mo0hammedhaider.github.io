@@ -1,0 +1,161 @@
+/* 2026-11-24 فيرونتي — على هوية الدار (قاعدة 23): عاجي #F9F3ED رئيسي · بني #604832 للخط والخطوط والأزرار · تاوب #B0A99A لمسة.
+   ممنوع: ذهبي كلون علامة، توهّج/نيون، كليشة الأسود الفخم. يشتغل بس لما html عليه .fer */
+html.fer{--iv:#F9F3ED;--br:#604832;--tp:#B0A99A;--deep:#3d2c1d;--deeper:#2b1f14;--ink:#4a3826;--muted:#8a7764;--line:rgba(96,72,50,.14);--card:#fffdfa}
+.fer body{background:var(--iv)}
+.fer .kick::before{background:var(--tp)}
+
+/* الهيرو: خلفية بيضا تذوب لعاجي حتى صورة الفهد تبين بلا حواف */
+.fer .hero{background:linear-gradient(#fff 0,#fff 62%,var(--iv) 100%)}
+.fer .hero .en{font-family:M;letter-spacing:.42em;color:var(--muted);font-weight:600}
+.fer .hero h1{color:var(--br)}
+.fer .hero.v2 .stage.cine{height:auto;aspect-ratio:900/1096;max-width:460px;margin:8px auto 0}
+.fer .stage.cine .cimg{display:block;width:100%;height:100%;object-fit:cover;-webkit-mask-image:linear-gradient(#000 76%,transparent 99%);mask-image:linear-gradient(#000 76%,transparent 99%);animation:ferIn 1.6s var(--ease) both}
+@keyframes ferIn{from{opacity:0;transform:scale(1.07)}}
+.fer .hero.v2 .seal{top:10px;right:0}
+
+/* شريط الأرقام */
+.fx-stats{display:grid;grid-template-columns:repeat(3,1fr);max-width:440px;margin:-34px auto 0;position:relative;z-index:2;background:rgba(255,253,250,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 40px rgba(96,72,50,.10);padding:14px 2px 12px}
+.fx-st{display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.fx-st+.fx-st::before{content:"";position:absolute;right:0;top:12%;bottom:12%;width:1px;background:var(--line)}
+.fx-st b{font-family:M;font-weight:700;font-size:clamp(19px,5.6vw,24px);color:var(--br);display:flex;align-items:center;gap:3px;direction:ltr}
+.fx-st b i{font-style:normal;color:#E0A526;font-size:.85em}
+.fx-st small{font-size:11.5px;color:var(--muted)}
+.fx-rib{display:inline-flex;align-items:center;gap:8px;margin:12px auto 4px;padding:6px 16px;border-radius:99px;background:var(--br);color:var(--iv);font-size:13px;font-weight:900}
+.fx-rib i{width:5px;height:5px;transform:rotate(45deg);background:var(--tp)}
+
+/* بطاقات السعر: صفوف واضحة بدل عمودين */
+.fer .pp{grid-template-columns:1fr;gap:12px}
+.fer .pcard{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"rd pl pv" "rd sv pv";align-items:center;text-align:right;gap:3px 12px;padding:16px 14px 14px;border-radius:18px}
+.fer .pcard::before{content:"";grid-area:rd;width:22px;height:22px;border-radius:50%;border:2px solid rgba(96,72,50,.25);box-shadow:inset 0 0 0 4px #fff;transition:background .2s,border-color .2s}
+.fer .pcard.on{border-color:var(--br);background:var(--card);box-shadow:0 14px 30px rgba(96,72,50,.14)}
+.fer .pcard.on::before{border-color:var(--br);background:var(--br)}
+.fer .pcard .pl{grid-area:pl}
+.fer .pcard:not(:has(.sv)) .pl{grid-row:1/3}
+.fer .pcard .pl b{font-size:17px}
+.fer .pcard .pv{grid-area:pv;align-items:flex-end}
+.fer .pcard .pv .big .n{font-size:26px}
+.fer .pcard .was{font-size:12px;color:var(--muted)}
+.fer .pcard .sv{grid-area:sv;justify-self:start;color:var(--br);background:#EDE5DA;font-size:12px}
+.fer .pcard .badge{left:auto;right:46px;transform:none;background:var(--br);color:var(--iv)}
+
+/* ===== الهرم العطري — عاجي سادة، خطوط بنية رفيعة، بلا توهّج ===== */
+.fx-pyr{--lc:#8F8272;position:relative;background:var(--iv);color:var(--ink);padding:58px 0 14px}
+.fx-pyr .head{text-align:center;position:relative;z-index:1}
+.fx-pyr .kick{justify-content:center}
+.fx-pyr .h2{color:var(--br)}
+.pyr-sc{height:330vh;position:relative;z-index:1}
+.pyr-st{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px var(--pad) 84px}
+.pyr-stage{position:relative;width:min(82vw,350px,46svh);aspect-ratio:320/290;flex:none}
+.pyr-stage canvas{position:absolute;left:-20%;top:-30%;width:140%;height:140%;pointer-events:none}
+.pyr-svg{position:relative;display:block;width:100%;height:100%;overflow:visible}
+.band{cursor:pointer;opacity:.32;transition:opacity .8s var(--ease)}
+.band.past{opacity:.6}
+.band.on{opacity:1}
+.band .halo,.band .sw{display:none}
+.band .edge{fill:none;stroke:rgba(96,72,50,.35);stroke-width:1.2;stroke-linejoin:round;transition:stroke .6s,stroke-width .6s}
+.band.on .edge{stroke:var(--br);stroke-width:2}
+.band text{text-anchor:middle;pointer-events:none}
+.band .lb{font-family:F,system-ui;font-weight:900;font-size:14px;fill:var(--iv)}
+.band .num{font-family:M,system-ui;font-weight:600;font-size:8.5px;letter-spacing:2.5px;fill:rgba(249,243,237,.75)}
+.band[data-i="0"] .lb{fill:var(--deep)}
+.band[data-i="0"] .num{fill:rgba(61,44,29,.6)}
+.pyr-card{width:100%;max-width:420px;margin-top:16px;min-height:228px;text-align:center}
+.pyr-prog{direction:rtl;display:flex;gap:6px;justify-content:center;margin-bottom:12px}
+.pyr-prog i{position:relative;width:52px;height:3px;border-radius:3px;background:rgba(96,72,50,.14);overflow:hidden}
+.pyr-prog b{position:absolute;inset:0;background:var(--lc);transform:scaleX(0);transform-origin:right;transition:transform .15s linear}
+.pyr-t small{display:block;font-size:12px;letter-spacing:.06em;color:var(--lc);font-weight:700}
+.pyr-t small .n{font-family:M}
+.pyr-t h3{font-size:clamp(24px,7vw,30px);font-weight:900;color:var(--br);margin-top:2px;animation:ferUp .6s var(--ease) both}
+.pyr-notes{display:flex;justify-content:center;gap:clamp(14px,5vw,26px);margin:14px 0 10px}
+.pyr-n{display:flex;flex-direction:column;align-items:center;gap:7px;animation:ferUp .7s var(--ease) both}
+.pyr-n:nth-child(2){animation-delay:.09s}.pyr-n:nth-child(3){animation-delay:.18s}
+.pyr-n i{display:block;width:clamp(56px,16vw,70px);aspect-ratio:1;border-radius:50%;background:#fff center/cover no-repeat;border:2px solid var(--lc);box-shadow:0 8px 18px rgba(96,72,50,.14)}
+.pyr-n span{font-size:13.5px;font-weight:700;color:var(--ink)}
+.pyr-p{font-size:14.5px;line-height:1.85;color:var(--ink);animation:ferUp .7s .22s var(--ease) both}
+@keyframes ferUp{from{opacity:0;transform:translateY(14px) scale(.95)}}
+.pyr-hint{position:absolute;bottom:92px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted);transition:opacity .5s}
+.pyr-hint i{display:block;width:10px;height:10px;margin:4px auto 0;border:solid var(--muted);border-width:0 1.5px 1.5px 0;transform:rotate(45deg);animation:ferBob 1.6s ease-in-out infinite}
+@keyframes ferBob{50%{transform:translate(0,5px) rotate(45deg)}}
+.pyr-st.go .pyr-hint{opacity:0}
+.pyr-q{position:relative;z-index:1;max-width:440px;margin:min(0px,calc((718px - 100svh)/2 - 40px)) auto 0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 18px 16px;box-shadow:0 12px 26px rgba(96,72,50,.07)}
+.pyr-q .st{color:#E0A526;letter-spacing:2px}.pyr-q .st em{font-style:normal;color:rgba(96,72,50,.2)}
+.pyr-q p{font-size:15.5px;line-height:1.85;color:var(--ink);margin-top:6px}
+.pyr-q figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.fx-radar{position:relative;z-index:1;text-align:center;margin-top:44px}
+.fx-radar .kick{justify-content:center}
+.fx-radar h3{font-size:clamp(26px,7.4vw,34px);font-weight:900;color:var(--br);margin-top:4px}
+.fx-radar p{font-size:15px;line-height:1.8;color:var(--muted);margin:6px auto 0;max-width:340px}
+.fx-radar svg{display:block;width:min(84vw,330px);margin:14px auto 0;overflow:visible}
+.rg{fill:none;stroke:rgba(96,72,50,.16);stroke-width:1}
+.ra{stroke:rgba(96,72,50,.12);stroke-width:1}
+.rp{fill:url(#rgf);stroke:var(--br);stroke-width:2;stroke-linejoin:round;transform:scale(0);transition:transform 1.5s cubic-bezier(.2,.9,.25,1.12) .25s}
+.fx-radar.in .rp{transform:scale(1)}
+.rd{fill:var(--br);opacity:0;transition:opacity .5s}
+.fx-radar.in .rd{opacity:1}
+.rl{font-family:F,system-ui;font-size:14px;font-weight:700;fill:var(--ink);text-anchor:middle}
+.fx-words{position:relative;z-index:1;display:flex;justify-content:center;align-items:center;gap:12px;margin:34px 0 0;font-size:clamp(34px,10.5vw,50px);font-weight:900;line-height:1.3;color:var(--br)}
+.fx-words i{font-style:normal;color:var(--tp);font-size:.6em}
+.fx-words span{display:inline-block;animation:ferUp .8s var(--ease) both}
+
+/* ===== إلك… ولها ===== */
+.fx-duo .duo-img{position:relative;margin-top:18px;border-radius:24px;overflow:hidden;aspect-ratio:900/983;background:#a3a8a9;box-shadow:0 22px 44px rgba(96,72,50,.16)}
+.fx-duo .duo-img img{width:100%;height:100%;object-fit:cover;display:block}
+.fx-duo .duo-img::after{content:"";position:absolute;inset:auto 0 0 0;height:32%;background:linear-gradient(transparent,rgba(61,44,29,.55))}
+.duo-tag{position:absolute;bottom:16px;left:0;right:0;z-index:1;text-align:center;font-family:M;font-size:11px;letter-spacing:.4em;color:var(--iv);font-weight:600}
+.duo-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:-26px;position:relative;z-index:2;padding:0 10px}
+.duo-c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px;box-shadow:0 12px 26px rgba(96,72,50,.08);text-align:right}
+.duo-c i{display:block;width:30px;height:3px;border-radius:3px;background:var(--br);margin-bottom:8px}
+.duo-c i.she{background:var(--tp)}
+.duo-c b{display:block;font-size:19px;font-weight:900;color:var(--br)}
+.duo-c p{font-size:13.5px;line-height:1.7;color:var(--ink);margin-top:3px}
+.duo-q{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.duo-q .st{color:#E0A526;letter-spacing:1px;font-size:13px}
+.duo-q p{font-size:15px;line-height:1.8;color:var(--ink);margin-top:4px}
+.duo-q figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.fer .duo-cta{margin-top:18px;flex-direction:column;gap:0;height:auto;padding:12px 10px;line-height:1.35;font-size:17px}
+.fer .duo-cta small{font-size:13px;opacity:.85}
+
+/* ===== من قريب ===== */
+.gal{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:16px var(--pad) 6px;scrollbar-width:none;scroll-padding:0 var(--pad)}
+.gal::-webkit-scrollbar{display:none}
+.gal figure{flex:0 0 74%;max-width:330px;scroll-snap-align:center;background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 26px rgba(96,72,50,.07)}
+.gal img{display:block;width:100%;aspect-ratio:800/1072;object-fit:cover}
+.gal figcaption{padding:10px 14px 12px;font-size:13.5px;font-weight:700;color:var(--br)}
+.gal-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.gal-dots i{width:6px;height:6px;border-radius:99px;background:rgba(96,72,50,.2);transition:width .3s,background .3s}
+.gal-dots i.on{width:20px;background:var(--br)}
+
+@media (prefers-reduced-motion:reduce){.pyr-sc{height:auto}.pyr-st{position:relative;height:auto;padding-bottom:30px}.pyr-q{margin-top:6px}.pyr-hint{display:none}}
+
+/* ===== فيديوهات جوّا الأقسام (2026-11-24) ===== */
+.vsec{position:relative;z-index:1}
+.vsec .wrap.reveal{text-align:center}
+.vsec .kick{justify-content:center}
+.vsec .hint{text-align:center;font-size:12px;color:var(--muted);margin:4px 0 0}
+.rail.two{justify-content:center}
+.fx-vn{margin-top:46px;padding-top:34px;border-top:1px solid var(--line)}
+.fx-vn .reel{box-shadow:0 18px 40px rgba(96,72,50,.22)}
+/* الانبوكسنك: قسم بني الدار (نفس .dark بباقي الصفحات)، أول فيديو أكبر */
+.fx-unbox{background:var(--deep);color:var(--iv);padding:46px 0 40px}
+.fx-unbox .kick{color:var(--tp)}
+.fx-unbox .h2{color:var(--iv)}
+.fx-unbox .lead{color:rgba(249,243,237,.78)}
+.fx-unbox .hint{color:rgba(249,243,237,.7)}
+.fx-unbox .reel{box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.fx-unbox .reel:first-child{flex-basis:calc((100% - 12px)/1.6);max-width:300px}
+.ub-pts{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ub-pts li{background:rgba(249,243,237,.06);border:1px solid rgba(176,169,154,.3);border-radius:14px;padding:12px 8px;text-align:center}
+.ub-pts b{display:block;font-size:13.5px;color:var(--iv);margin-bottom:3px}
+.ub-pts span{font-size:11.5px;line-height:1.5;color:rgba(249,243,237,.7)}
+
+/* كروت الأسعار بترتيب محمد: عنوان + عدد القطع، السابق مشطوب فوك الحالي، بلا توفير */
+.fer .pcard{padding:18px 16px}
+.fer .pcard .pl b{font-size:17.5px;line-height:1.35}
+.fer .pcard .pl small{font-size:13.5px;color:var(--muted)}
+.fer .pcard .pv{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.fer .pcard .pv .was{order:-1;font-size:0;color:var(--muted);line-height:1}
+.fer .pcard .pv .was s{font-size:15px}
+.fer .pcard .pv .was s{text-decoration-thickness:1.5px}
+.fer .pcard .pv .big small{display:none}
+.fer .pcard .pv .big .n{font-size:30px}
+.fer .pp::after{content:"جميع الأسعار بالدينار العراقي";text-align:center;font-size:13px;color:var(--muted);padding-top:2px}
