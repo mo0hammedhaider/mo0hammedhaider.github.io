@@ -118,7 +118,7 @@ function motion(){var R=document.querySelectorAll(".reveal,.stg");
   var V=document.querySelectorAll(".reel video");if(!V.length)return;
   var vio=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.intersectionRatio>.6){if(!v.src)v.src=v.dataset.src;v.play().catch(function(){})}else v.pause()})},{threshold:[0,.6,1]});
   [].forEach.call(V,function(v){vio.observe(v)});
-  $("reelRail").addEventListener("click",function(e){var r=e.target.closest(".reel");if(!r)return;var v=r.querySelector("video"),on=!r.classList.contains("on");
+  document.addEventListener("click",function(e){var r=e.target.closest(".reel");if(!r)return;var v=r.querySelector("video"),on=!r.classList.contains("on");
     [].forEach.call(document.querySelectorAll(".reel.on"),function(x){x.classList.remove("on");x.querySelector("video").muted=true});
     if(!v.src)v.src=v.dataset.src;if(on){r.classList.add("on");v.muted=false;v.play().catch(function(){})}})}
 
