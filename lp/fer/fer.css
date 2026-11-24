@@ -183,3 +183,25 @@ html.fer{--iv:#F9F3ED;--br:#604832;--tp:#B0A99A;--deep:#3d2c1d;--deeper:#2b1f14;
 .fer .fx-ig .more{margin-top:12px}
 .fer .fx-dmk{margin-top:26px}
 .fer .fx-dmk .lead{margin-top:0!important;font-size:14px}
+
+/* ===== 2026-11-25: الهرم صار فيديو يمشي ويا السكرول (محمد) ===== */
+.pyr-sc.vid{height:300vh}
+.pyr-sc.vid .pyr-st{justify-content:flex-end;padding:0 var(--pad) 88px;overflow:hidden}
+.pyr-stage.vid{position:absolute;top:0;left:0;right:0;margin:0 auto;width:min(100%,560px,55.8svh);height:auto;aspect-ratio:540/968;background:#ecebe9}
+.pyr-stage.vid video{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.pyr-stage.vid::before,.pyr-stage.vid::after{content:"";position:absolute;left:0;right:0;pointer-events:none;z-index:1}
+.pyr-stage.vid::before{top:0;height:16%;background:linear-gradient(var(--iv),rgba(249,243,237,0))}
+.pyr-stage.vid::after{bottom:-1px;height:22%;background:linear-gradient(rgba(249,243,237,0),var(--iv))}
+@media (min-width:600px){.pyr-stage.vid{-webkit-mask:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}}
+.pyr-sc.vid .pyr-card{position:relative;z-index:2;margin-top:0;min-height:0;padding:12px 14px 10px;border-radius:22px;background:rgba(255,253,250,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(96,72,50,.1);box-shadow:0 14px 30px rgba(96,72,50,.12)}
+.pyr-sc.vid .pyr-notes{margin:10px 0 8px}
+.pyr-sc.vid .pyr-n{animation:none;opacity:0;transform:translateY(14px) scale(.86);transition:opacity .45s var(--ease),transform .55s var(--ease)}
+.pyr-sc.vid .pyr-n.on{opacity:1;transform:none}
+.pyr-sc.vid .pyr-n i{width:clamp(50px,14vw,62px)}
+.pyr-sc.vid .pyr-p{font-size:13.5px;line-height:1.75}
+.pyr-sc.vid .pyr-t h3{font-size:clamp(21px,6vw,26px)}
+.pyr-sc.vid .pyr-prog{margin-bottom:8px}
+.pyr-sc.vid .pyr-hint{position:absolute;top:auto;bottom:auto;top:18svh;z-index:2;color:var(--br);font-weight:700;text-shadow:0 1px 8px rgba(255,255,255,.9)}
+.pyr-sc.vid .pyr-hint i{border-color:var(--br)}
+.pyr-sc.vid + .wrap .pyr-q{margin-top:-46px}
+@media (prefers-reduced-motion:reduce){.pyr-sc.vid{height:auto}.pyr-sc.vid .pyr-st{min-height:100svh}.pyr-sc.vid .pyr-n{opacity:1;transform:none}}

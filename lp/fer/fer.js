@@ -33,9 +33,9 @@ var svg='<svg class="pyr-svg" id="pySvg" viewBox="0 0 320 290" role="img" aria-l
     '<polygon class="edge" points="'+p+'"/>'+
     '<text class="num" x="160" y="'+(TY[i]-(i?17:15))+'">0'+(i+1)+'</text><text class="lb" x="160" y="'+TY[i]+'">'+esc(l.s)+'</text></g>'}).join("")+'</svg>';
 X.box='<section class="fx-pyr" id="box"><div class="wrap head reveal"><div class="kick">'+esc(P.k)+'</div><h2 class="h2">'+esc(P.h)+'</h2><p class="lead">'+esc(P.lead)+'</p></div>'+
-  '<div class="pyr-sc" id="pySc"><div class="pyr-st" id="pySt"><div class="pyr-stage"><canvas id="pyCv" aria-hidden="true"></canvas>'+svg+'</div>'+
+  '<div class="pyr-sc'+(P.vid?' vid':'')+'" id="pySc"><div class="pyr-st" id="pySt"><div class="pyr-stage'+(P.vid?' vid':'')+'">'+(P.vid?'<video id="pyVid" muted playsinline preload="none" disablepictureinpicture aria-hidden="true" poster="'+P.vid+'.jpg?v='+(P.vidV||'')+'" data-src="'+P.vid+'.mp4?v='+(P.vidV||'')+'"></video>':'<canvas id="pyCv" aria-hidden="true"></canvas>'+svg)+'</div>'+
   '<div class="pyr-card" id="pyCard" aria-live="polite"></div><div class="pyr-hint" aria-hidden="true">نزّل لتحت<i></i></div></div></div>'+
-  '<div class="wrap"><figure class="pyr-q reveal"><div class="st">★★★★<em>★</em></div><p>«'+esc(P.quote[0])+'»</p><figcaption>زبون من موقع الدار</figcaption></figure>'+
+  '<div class="wrap"><figure class="pyr-q reveal"><div class="st">'+"★★★★★".slice(0,P.quote[1]||5)+((P.quote[1]||5)<5?'<em>'+"★★★★★".slice(0,5-P.quote[1])+'</em>':'')+'</div><p>«'+esc(P.quote[0])+'»</p><figcaption>زبون من موقع الدار</figcaption></figure>'+
   radar()+'<div class="fx-words reveal">'+P.words.map(function(w,i){return(i?'<i>·</i>':'')+'<span style="animation-delay:'+(i*.35)+'s">'+esc(w)+'</span>'}).join("")+'</div></div>'+
   vsec(D.vnotes,"fx-vn")+'</section>'+
   (D.unbox?'<section class="sec fx-unbox" id="unbox">'+vsec(D.unbox,"")+
@@ -93,6 +93,21 @@ X.init=function(api){var $=api.$,$$=api.$$;
     if("IntersectionObserver"in window)new IntersectionObserver(function(e,o){if(e[0].isIntersecting){run();o.disconnect()}},{threshold:.4}).observe(st);else run()}
 
   // الهرم: التقدّم من السكرول داخل pySc
+  // 2026-11-25: فيديو المكونات يمشي ويا السكرول (بالعكس: يبدي من الزجاجة عالكريمة، وينزل للورد والريحان، للفانيلا، وللعود)
+  var vid=$("#pyVid"),VT=P.vidT||5.9,V0=P.vidT0||0,vT=VT,vC=-1,vRaf=0,vOn=false;
+  if(vid){
+    if(!RM){
+      var prime=function(){var pr=vid.play();if(pr&&pr.then)pr.then(function(){vid.pause()}).catch(function(){});else vid.pause()};
+      // نحمّله كامل (blob) حتى التقديم والترجيع يكون سلس بكل المتصفحات (آيفون يحتاجه)
+      var vLoad=0,load=function(){if(vLoad)return;vLoad=1;var u=vid.dataset.src,set=function(x){vid.src=x;vid.load();vid.addEventListener("loadeddata",prime,{once:true})};
+        if(window.fetch&&window.URL&&URL.createObjectURL)fetch(u).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){set(URL.createObjectURL(b))}).catch(function(){set(u)});else set(u)};
+      var vstep=function(){vRaf=0;if(!vOn)return;
+        if(vid.readyState>=1){if(vC<0)vC=vT;vC+=(vT-vC)*.22;if(Math.abs(vT-vC)<.004)vC=vT;
+          if(!vid.seeking&&Math.abs(vid.currentTime-vC)>.02){try{vid.currentTime=vC}catch(e){}}}
+        vRaf=requestAnimationFrame(vstep)};
+      if("IntersectionObserver"in window)new IntersectionObserver(function(e){vOn=e[0].isIntersecting;if(vOn){load();if(!vRaf)vRaf=requestAnimationFrame(vstep)}},{rootMargin:"900px 0px"}).observe($("#pySc"));
+    }
+  }
   var sc=$("#pySc"),stk=$("#pySt"),card=$("#pyCard"),sec=$("#box"),bands=$$("#pySvg .band"),bars,cur=-1;
   function paint(i){if(i===cur)return;cur=i;var l=L[i];sec.style.setProperty("--lc",l.c2);
     bands.forEach(function(b,j){b.classList.toggle("on",j===i);b.classList.toggle("past",j<i)});
@@ -104,7 +119,9 @@ X.init=function(api){var $=api.$,$$=api.$$;
   function prog(){var r=sc.getBoundingClientRect(),h=r.height-innerHeight;var p=h>0?Math.min(1,Math.max(0,-r.top/h)):0;
     var i=p<.34?0:p<.67?1:2;paint(i);
     if(bars)for(var j=0;j<3;j++)bars[j].style.transform="scaleX("+Math.min(1,Math.max(0,p*3-j)).toFixed(3)+")";
-    stk.classList.toggle("go",p>.04);return p}
+    stk.classList.toggle("go",p>.04);
+    var q=p*3-i,ns=card.querySelectorAll(".pyr-n");for(var k=0;k<ns.length;k++)ns[k].classList.toggle("on",RM||q>k*.2-.01);
+    if(vid)vT=V0+(VT-V0)*(1-p);return p}
   bands.forEach(function(b){b.addEventListener("click",function(){var i=+b.dataset.i,r=sc.getBoundingClientRect(),h=r.height-innerHeight;
     scrollTo({top:scrollY+r.top+h*(i/3+.16),behavior:RM?"auto":"smooth"})})});
   var tick=0;addEventListener("scroll",function(){if(!tick){tick=1;requestAnimationFrame(function(){tick=0;prog()})}},{passive:true});
