@@ -58,7 +58,9 @@ function renderBundles(){var h="",old=Number(C.old_price_single||0),L=launch();
       '<span class="rd"></span>'+mini(cs.scents)+'<div class="tt"><b>'+NAMES[n]+'</b><small>'+sub+'</small>'+(sv?'<span class="sv">توفّر '+money(sv)+'</span>':"")+'</div>'+
       '<div class="pr"><b class="n">'+money(pr)+'<i>د.ع</i></b>'+strike+'</div></div>'});
   $("bl").innerHTML=h;renderChosen()}
-function renderChosen(){var n=state.bundle,cs=curSet(n),S=setsOf(n);
+function renderQseg(){var q=$("qseg");if(!q)return;q.innerHTML=[1,2,3].map(function(n){var on=state.bundle===n;
+  return'<button type="button" class="qb'+(on?" on":"")+'" data-n="'+n+'" aria-pressed="'+on+'"><b>'+NAMES[n]+'</b><span>'+money(price(n))+' د.ع</span></button>'}).join("")}
+function renderChosen(){var n=state.bundle,cs=curSet(n),S=setsOf(n);renderQseg();
   $("chosen").innerHTML=mini(cs.scents)+'<div class="cx"><b>'+NAMES[n]+(cs.label&&n>1?" · "+esc(cs.label):"")+'</b><span>'+esc(cs.scents.join(" + "))+'</span></div>'+(S.length>1?'<button type="button" class="chg" id="chgBtn">'+esc(P.chg)+"</button>":"");
   var box=$("chOps");box.innerHTML=opsHTML(n);if(S.length<2)box.hidden=true}
 function pick(n,i){var ch=n!==state.bundle;state.bundle=n;if(i!=null)state.opt[n]=i;renderBundles();renderTotals();
@@ -227,6 +229,7 @@ function bgRetry(){var L=pend();if(!L.length)return;var o=L[L.length-1];send(o).
 function init(){renderAll();loadCounters();hero();gallery();motion();
   $("bl").addEventListener("click",function(e){var b=e.target.closest(".lc");if(b&&+b.dataset.n!==state.bundle)pick(+b.dataset.n)});
   $("chosen").addEventListener("click",function(e){if(e.target.closest("#chgBtn")){var x=$("chOps");x.hidden=!x.hidden}});
+  if($("qseg"))$("qseg").addEventListener("click",function(e){var b=e.target.closest(".qb");if(b){pick(+b.dataset.n);$("chOps").hidden=true}});
   $("chOps").addEventListener("click",function(e){var o=e.target.closest(".op");if(o){pick(+o.dataset.n,+o.dataset.i);$("chOps").hidden=true}});
   $("bl").addEventListener("keydown",function(e){var b=e.target.closest(".lc");if(b&&e.target===b&&(e.key==="Enter"||e.key===" ")){e.preventDefault();pick(+b.dataset.n)}});
   if(SRC.code){$("code").value=SRC.code;$("f-code").hidden=true}
