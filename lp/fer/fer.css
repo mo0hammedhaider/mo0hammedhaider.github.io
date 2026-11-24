@@ -205,3 +205,8 @@ html.fer{--iv:#F9F3ED;--br:#604832;--tp:#B0A99A;--deep:#3d2c1d;--deeper:#2b1f14;
 .pyr-sc.vid .pyr-hint i{border-color:var(--br)}
 .pyr-sc.vid + .wrap .pyr-q{margin-top:-46px}
 @media (prefers-reduced-motion:reduce){.pyr-sc.vid{height:auto}.pyr-sc.vid .pyr-st{min-height:100svh}.pyr-sc.vid .pyr-n{opacity:1;transform:none}}
+
+/* 2026-11-25 (محمد): بعد ما يخلص الفيديو القسم ينطوي لشاشة وحدة (الصعود ما يوكّف) */
+.pyr-sc.vid.done{height:auto}
+.pyr-sc.vid.done .pyr-st{position:relative}
+.pyr-sc.vid.done .pyr-hint{display:none}

@@ -94,16 +94,21 @@ X.init=function(api){var $=api.$,$$=api.$$;
 
   // الهرم: التقدّم من السكرول داخل pySc
   // 2026-11-25: فيديو المكونات يمشي ويا السكرول (بالعكس: يبدي من الزجاجة عالكريمة، وينزل للورد والريحان، للفانيلا، وللعود)
-  var vid=$("#pyVid"),VT=P.vidT||5.9,V0=P.vidT0||0,vT=VT,vC=-1,vRaf=0,vOn=false;
+  var vid=$("#pyVid"),VT=P.vidT||5.9,V0=P.vidT0||0,vT=0,vRaf=0,vOn=false;
   if(vid){
     if(!RM){
-      var prime=function(){var pr=vid.play();if(pr&&pr.then)pr.then(function(){vid.pause()}).catch(function(){});else vid.pause()};
+      var prime=function(){var pr=vid.play();if(pr&&pr.then)pr.then(function(){if(vid.currentTime>=vT-.03)vid.pause()}).catch(function(){vNP=1});else vid.pause()};
       // نحمّله كامل (blob) حتى التقديم والترجيع يكون سلس بكل المتصفحات (آيفون يحتاجه)
       var vLoad=0,load=function(){if(vLoad)return;vLoad=1;var u=vid.dataset.src,set=function(x){vid.src=x;vid.load();vid.addEventListener("loadeddata",prime,{once:true})};
         if(window.fetch&&window.URL&&URL.createObjectURL)fetch(u).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){set(URL.createObjectURL(b))}).catch(function(){set(u)});else set(u)};
+      // 2026-11-25 (محمد): ستموذ + ما يرجع — الفيديو معكوس مسبقاً ويشتغل للأمام (تشغيل طبيعي بدل التقديم فريم فريم)،
+      // ينزل العميل يتقدّم ويلحك بسرعة لحد 3x، يصعد يبقى على آخر فريم وصله
+      var vNP=0,vPlay=function(){var pr=vid.play();if(pr&&pr.catch)pr.catch(function(){vNP=1})};
       var vstep=function(){vRaf=0;if(!vOn)return;
-        if(vid.readyState>=1){if(vC<0)vC=vT;vC+=(vT-vC)*.22;if(Math.abs(vT-vC)<.004)vC=vT;
-          if(!vid.seeking&&Math.abs(vid.currentTime-vC)>.02){try{vid.currentTime=vC}catch(e){}}}
+        if(vid.readyState>=2){var c=vid.currentTime,d=vT-c;
+          if(vNP){if(!vid.seeking&&d>.03){try{vid.currentTime=vT}catch(e){}}}
+          else if(d>.03){var r=Math.min(3,1+d*1.4);if(Math.abs(vid.playbackRate-r)>.15)vid.playbackRate=r;if(vid.paused)vPlay()}
+          else if(!vid.paused)vid.pause()}
         vRaf=requestAnimationFrame(vstep)};
       if("IntersectionObserver"in window)new IntersectionObserver(function(e){vOn=e[0].isIntersecting;if(vOn){load();if(!vRaf)vRaf=requestAnimationFrame(vstep)}},{rootMargin:"900px 0px"}).observe($("#pySc"));
     }
@@ -116,12 +121,16 @@ X.init=function(api){var $=api.$,$$=api.$$;
       '<div class="pyr-notes">'+l.notes.map(function(n){return'<div class="pyr-n"><i style="background-image:url('+n[1]+')"></i><span>'+esc(n[0])+'</span></div>'}).join("")+'</div>'+
       '<p class="pyr-p">'+esc(l.p)+'</p>';
     bars=card.querySelectorAll(".pyr-prog b");tint=hex(l.c2)}
-  function prog(){var r=sc.getBoundingClientRect(),h=r.height-innerHeight;var p=h>0?Math.min(1,Math.max(0,-r.top/h)):0;
+  // 2026-11-25 (محمد): من يخلص الفيديو القسم ينطوي لشاشة وحدة، حتى من يصعد ما يوكّفه 3 شاشات مرة ثانية
+  var pDone=0;function fold(){pDone=1;var an=sc.nextElementSibling,t0=an?an.getBoundingClientRect().top:0;
+    sc.classList.add("done");if(vid)vT=VT;
+    var d=an?an.getBoundingClientRect().top-t0:0;if(Math.abs(d)>1)scrollTo({top:scrollY+d,behavior:"instant"})}
+  function prog(){if(pDone)return 1;var r=sc.getBoundingClientRect(),h=r.height-innerHeight;var p=h>0?Math.min(1,Math.max(0,-r.top/h)):0;
     var i=p<.34?0:p<.67?1:2;paint(i);
     if(bars)for(var j=0;j<3;j++)bars[j].style.transform="scaleX("+Math.min(1,Math.max(0,p*3-j)).toFixed(3)+")";
     stk.classList.toggle("go",p>.04);
     var q=p*3-i,ns=card.querySelectorAll(".pyr-n");for(var k=0;k<ns.length;k++)ns[k].classList.toggle("on",RM||q>k*.2-.01);
-    if(vid)vT=V0+(VT-V0)*(1-p);return p}
+    if(vid){vT=Math.max(vT,Math.min(VT-.05,(VT-V0)*p));if(p>=1&&r.top<0)fold()}return p}
   bands.forEach(function(b){b.addEventListener("click",function(){var i=+b.dataset.i,r=sc.getBoundingClientRect(),h=r.height-innerHeight;
     scrollTo({top:scrollY+r.top+h*(i/3+.16),behavior:RM?"auto":"smooth"})})});
   var tick=0;addEventListener("scroll",function(){if(!tick){tick=1;requestAnimationFrame(function(){tick=0;prog()})}},{passive:true});
