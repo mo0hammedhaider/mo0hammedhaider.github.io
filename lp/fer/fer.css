@@ -170,3 +170,16 @@ html.fer{--iv:#F9F3ED;--br:#604832;--tp:#B0A99A;--deep:#3d2c1d;--deeper:#2b1f14;
 .fer .hero h1 .nm::before,.fer .hero h1 .nm::after{content:"";position:absolute;top:1.22em;left:.1em;width:.1em;height:.1em;background:currentColor;transform:rotate(45deg);border-radius:.008em}
 .fer .hero h1 .nm::after{left:.25em}
 .fer .fx-vnw{padding:10px 0 0}.fer .fx-vnw .fx-vn{margin-top:0;border-top:0}
+
+/* 2026-11-24: آراء حقيقية (تعليقات انستغرام + رسائل) داخل #rev */
+.fer .fx-ig{margin-top:18px}
+.fer .fx-igk{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#7a5f47;margin:0 0 10px}
+.fer .fx-igk svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+.fer .fx-igk svg .d{fill:currentColor;stroke:none}
+.fer .fx-igl{display:grid;gap:10px}
+.fer .fx-igc{margin:0;background:#fff;border-radius:16px;padding:12px 12px 6px;box-shadow:0 8px 22px rgba(60,40,20,.08);border:1px solid rgba(60,40,20,.06)}
+.fer .fx-igc[hidden]{display:none}
+.fer .fx-igc img{display:block;width:100%;height:auto}
+.fer .fx-ig .more{margin-top:12px}
+.fer .fx-dmk{margin-top:26px}
+.fer .fx-dmk .lead{margin-top:0!important;font-size:14px}

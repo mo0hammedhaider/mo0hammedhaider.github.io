@@ -73,6 +73,17 @@ X.more=['<section class="sec fx-duo" id="duo"><div class="wrap"><div class="reve
 
 /* ===== التشغيل ===== */
 X.init=function(api){var $=api.$,$$=api.$$;
+  // 2026-11-24: تعليقات انستغرام الحقيقية داخل قسم الآراء، قبل سكرينات الرسائل (LP.fer.ig)
+  var rv=$("#rev"),IG=D.ig;
+  if(rv&&IG&&IG.list&&IG.list.length){var hw=rv.querySelector(".wrap"),n=IG.n||4,w=document.createElement("div");w.className="wrap fx-ig";
+    w.innerHTML='<div class="fx-igk"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" class="d"/></svg>'+esc(IG.k)+'</div><div class="fx-igl">'+
+      IG.list.map(function(s,i){return'<figure class="fx-igc"'+(i>=n?' hidden':'')+'><img loading="lazy" src="'+esc(s)+'" alt="تعليق زبون على انستغرام"></figure>'}).join("")+'</div>'+
+      (IG.list.length>n?'<button class="more" id="moreIG">'+esc(IG.more)+' (<span class="n">'+(IG.list.length-n)+'</span>)</button>':"");
+    if(hw)hw.parentNode.insertBefore(w,hw.nextSibling);
+    var ld=hw&&hw.querySelector("p.lead"),rail=rv.querySelector(".shots");
+    if(rail){var lw=document.createElement("div");lw.className="wrap fx-dmk";lw.innerHTML='<div class="fx-igk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>رسائل وصلتنا بعد الاستلام</div>';if(ld){ld.innerHTML='اسحب وشوف <b class="n">'+rv.querySelectorAll(".shots .shot").length+'</b> رسائل مثل ما وصلتنا ←';lw.appendChild(ld)}rail.parentNode.insertBefore(lw,rail)}
+    var mb=$("#moreIG");if(mb)mb.addEventListener("click",function(){w.querySelectorAll(".fx-igc[hidden]").forEach(function(e){e.hidden=false});this.remove()});
+  }
   // count-up
   var st=$("#fxStats");
   if(st){var done=0,run=function(){if(done)return;done=1;$$("#fxStats [data-to]").forEach(function(el){var to=+el.dataset.to,d=+el.dataset.d,t0=performance.now(),T=1500;
@@ -125,6 +136,8 @@ X.init=function(api){var $=api.$,$$=api.$$;
   // 2026-11-24 ترتيب: الضمان والتيستر (proof) قبل الطلب، وفيديوهات المكونات بعد الطلب
   var od=$("#order"),pf=$("#proof"),vn=$(".fx-vn");
   if(od&&pf)od.parentNode.insertBefore(pf,od);
+  // 2026-11-24 (محمد): الآراء الحقيقية تصعد فوك الضمان والفورم ← آراء · ضمان · طلب
+  var rvs=$("#rev");if(od&&rvs)od.parentNode.insertBefore(rvs,pf&&pf.parentNode===od.parentNode?pf:od);
   if(od&&vn){var vs=document.createElement("section");vs.className="sec fx-vnw";vs.appendChild(vn);od.parentNode.insertBefore(vs,od.nextSibling)}
   // نقاط الياء الأخيرة بالاسم (fer.css .nm)
   var h1=$(".hero h1");if(h1&&/ي$/.test(h1.textContent.trim()))h1.innerHTML='<span class="nm">'+h1.innerHTML+'</span>';
