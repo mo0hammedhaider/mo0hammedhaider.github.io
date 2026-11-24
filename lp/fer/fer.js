@@ -122,6 +122,12 @@ X.init=function(api){var $=api.$,$$=api.$$;
     for(var i=0;i<f.length;i++){var r=f[i].getBoundingClientRect(),d=Math.abs(r.left+r.width/2-mid);if(d<bd){bd=d;best=i}}
     dots.forEach(function(d,i){d.classList.toggle("on",i===best)})},{passive:true});
 
+  // 2026-11-24 ترتيب: الضمان والتيستر (proof) قبل الطلب، وفيديوهات المكونات بعد الطلب
+  var od=$("#order"),pf=$("#proof"),vn=$(".fx-vn");
+  if(od&&pf)od.parentNode.insertBefore(pf,od);
+  if(od&&vn){var vs=document.createElement("section");vs.className="sec fx-vnw";vs.appendChild(vn);od.parentNode.insertBefore(vs,od.nextSibling)}
+  // نقاط الياء الأخيرة بالاسم (fer.css .nm)
+  var h1=$(".hero h1");if(h1&&/ي$/.test(h1.textContent.trim()))h1.innerHTML='<span class="nm">'+h1.innerHTML+'</span>';
   // رمشة الفهد: جفنين ينزلون ويصعدون فوك العيون (fer.css .lid)، كل 3–6 ثواني ومرات رمشتين
   var st=$(".stage.cine");
   if(st&&!RM&&st.animate){
