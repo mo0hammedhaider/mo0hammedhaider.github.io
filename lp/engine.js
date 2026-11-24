@@ -301,26 +301,34 @@ function done(){ORDER.shown=true;var tot=ORDER.total+SHIP+(ORDER.hair?HAIR.price
 }
 
 /* ===== الربط: وسيط Apps Script → قناة «طلبات الجسمي» + شيت ===== */
-function waLink(){var o=ORDER||{};return "https://wa.me/"+WA+"?text="+encodeURIComponent("هلا، هذا تأكيد طلبي من صفحة "+LP.name+" ✅\nرقم الطلب: "+(o.ref||"")+"\nالاسم: "+(o.name||""))}
+// 2026-11-25 (محمد): رسالة الواتساب بيها تفاصيل الطلب مختصرة (مو بس رقم الطلب) — مقفلة لكل صفحات الهبوط
+function waLink(){var o=ORDER||{},L=["هلا، هذا تأكيد طلبي من صفحة "+LP.name+" ✅","رقم الطلب: "+(o.ref||""),"الاسم: "+(o.name||"")];
+  if(o.items){var all=o.total+(o.hair?HAIR.price:0);
+    L.push("الطلب: "+orderProd(o,1),"المجموع عند الاستلام: "+money(all+SHIP)+" د.ع (ويه التوصيل)","العنوان: "+o.governorate+" - "+o.address)}
+  return "https://wa.me/"+WA+"?text="+encodeURIComponent(L.join("\n"))}
 function relay(p){p.page=LP.slug;if(TEST){try{console.log("[TEST] الطلب ما انرسل",p)}catch(e){}return new Promise(function(r){setTimeout(function(){r({ok:true})},900)})}return fetch(RELAY,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(p),redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw new Error(j.error||"relay");return j})}
 var SRC=(function(){var k="aj_src",q=new URLSearchParams(location.search),v={};["utm_source","utm_campaign","utm_content","utm_term","fbclid"].forEach(function(n){if(q.get(n))v[n]=q.get(n).slice(0,80)});
   try{if(Object.keys(v).length)sessionStorage.setItem(k,JSON.stringify(v));else v=JSON.parse(sessionStorage.getItem(k)||"{}")}catch(e){}return v})();
+/* 2026-11-25 بطلب محمد: رمز الإعلان (آخر 6 أرقام من ad.id بـutm_content={{ad.id}}) يلزگ بسطر الملاحظة، والفريق ينسخه فيوصل client_note بروزنامة */
+function adRef(){var a=String(SRC.utm_content||"").replace(/\D/g,"");return a.length>=6?" · إعلان "+a.slice(-6):""}
 function srcLine(){var a=SRC.utm_content||SRC.utm_campaign;return a?"الإعلان: "+a+(SRC.utm_campaign&&SRC.utm_content?" · "+SRC.utm_campaign:""):(SRC.fbclid?"الإعلان: ميتا (بدون اسم)":"الإعلان: زيارة مباشرة")}
 function hairName(id){var h=HAIR.items.filter(function(x){return x.id===id})[0];return "عطر شعر "+(h?h.name:id)}
+function orderProd(o,cust){var B=LP.bundle,q=o.q,ex=o.extra||[];
+  function rz(s){var c=CAT[s];return (c&&(cust?c.name||c.rz:c.rz||c.name))||s}
+  var P=[(B?((cust?LP.name:B.rz)||LP.name)+(B.contents&&B.items.length>1?" ("+B.contents+")":""):rz(LP.slug)||LP.name)+(q>1?" × "+q:"")];
+  var cnt={};ex.forEach(function(s){cnt[s]=(cnt[s]||0)+1});Object.keys(cnt).forEach(function(s){P.push(rz(s)+(cnt[s]>1?" × "+cnt[s]:""))});
+  if(o.hair)P.push(hairName(o.hair)+(cust?"":" (بـ28 الف بدل 58)"));
+  return P.join(" + ")}
 function orderText(o){
   var B=LP.bundle, q=o.q, ex=o.extra, hp=o.hair?HAIR.price:0, all=o.total+hp;
-  function rz(s){var c=CAT[s];return (c&&(c.rz||c.name))||s}
   function alf(n){return n%1000===0?(n/1000)+(n/1000>2&&n/1000<11?" الاف":" الف"):money(n)}
-  var P=[(B?(B.rz||LP.name)+(B.contents?" ("+B.contents+")":""):rz(LP.slug)||LP.name)+(q>1?" × "+q:"")];
-  var cnt={};ex.forEach(function(s){cnt[s]=(cnt[s]||0)+1});Object.keys(cnt).forEach(function(s){P.push(rz(s)+(cnt[s]>1?" × "+cnt[s]:""))});
-  if(o.hair)P.push(hairName(o.hair)+" (بـ28 الف بدل 58)");
-  var prod=P.join(" + ");
+  var prod=orderProd(o);
   var rzBase=(B?TIERS[o.sel].price:U*q)+ex.reduce(function(a,s){return a+CAT[s].price},0), rzDisc=rzBase-o.total;
   var L=["الاسم : "+o.name,"الرقم : "+o.phone].concat(o.phone2?["رقم ثاني : "+o.phone2]:[],["العنوان : "+o.governorate+" "+o.address,"——",
     "تفاصيل الطلب : طلب جديد من صفحة الهبوط",
     "المنتج : "+prod,
     "السعر : "+alf(all)+(rzDisc>0?" (بعد خصم "+alf(rzDisc)+")":"")+" والتوصيل "+alf(SHIP),
-    "——","ملاحظة : تجربة العطر من خلال التيستر فقط والتأكد من سلامة الطلب",prod,
+    "——","ملاحظة : تجربة العطر من خلال التيستر فقط والتأكد من سلامة الطلب"+adRef(),prod,
     "","━━━━━━━━━━━━","للفريق بس (لا ينسخ):","المجموع عند الاستلام: "+money(all+SHIP)+" د.ع · "+unitName(q),"المصدر: صفحة "+LP.name,srcLine()].concat(o.phOk?[]:["⚠️ الزبون ما أكد رقمه (طلع قبل التأكيد): تأكدوا من الرقم"]));
   return L.join("\n");
 }
