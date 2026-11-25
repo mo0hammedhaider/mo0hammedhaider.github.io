@@ -164,7 +164,32 @@
   }
  },
  "videos": {
-  "hero_women": "",
+  "hero_women": {
+   "src": "/hair-lp/vid/hero-w.mp4",
+   "poster": "/hair-lp/img/hero-w-poster.webp",
+   "seq": [
+    [
+     0,
+     "شيك"
+    ],
+    [
+     5.6,
+     "أوربان"
+    ],
+    [
+     7.6,
+     "سيلكي"
+    ],
+    [
+     10.9,
+     "ماجستيك"
+    ],
+    [
+     12.6,
+     "شيك"
+    ]
+   ]
+  },
   "hero_men": "",
   "founder_sprayer_story": "",
   "testimonials_women": [

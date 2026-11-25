@@ -439,3 +439,11 @@ body.lock{overflow:hidden}
 .rvv .lab{inset:10px 10px auto auto;padding:4px 10px;border-radius:99px;background:rgba(30,20,12,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .rvv .lab b{display:none}.rvv .lab span{font-size:11px;opacity:1;font-weight:600}
 .gal.one img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+/* فيديو الهيرو: الشعر ينزل والقنينة تتبدل (2026-11-25) — خلفيته ملوّنة بلون الصفحة وأطرافه تذوب */
+.stage.vid{height:auto;margin-top:6px}
+.stage.vid .hv{display:block;width:100%;max-width:440px;height:auto;aspect-ratio:720/1004;margin:0 auto;object-fit:cover;background:var(--iv);
+-webkit-mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 94%,transparent),linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);-webkit-mask-composite:source-in;
+mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 94%,transparent),linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}
+.stage.vid .rname{position:relative;bottom:auto;height:44px;margin-top:-2px}
+.stage.vid .spec{position:static;transform:none;justify-content:center;margin-top:8px}
+.stage.vid .seal{top:2px;width:96px;height:96px}

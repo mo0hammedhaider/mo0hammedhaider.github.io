@@ -96,7 +96,13 @@ function renderStatic(){document.querySelectorAll("[data-k]").forEach(function(e
   $("faq").querySelectorAll("details").forEach(function(d){if(d.querySelector("summary").textContent==="شكد التوصيل؟")d.querySelector("p").textContent=money(C.delivery_fee)+" دينار لكل المحافظات، والدفع عند الاستلام."})}
 
 /* ===== الهيرو: منتج واحد بالواجهة يتقلب بين الروائح ===== */
-function hero(){var r=$("rot");if(!r)return;var L=[r.children,$("rname").children,$("rdots").children],i=0,T=null;
+function heroVid(){var v=$("hv");if(!v)return;var sq=JSON.parse(v.getAttribute("data-seq")||"[]"),N=$("rname").children,cur=0;
+  function sync(){var t=v.currentTime,k=0;for(var j=0;j<sq.length;j++)if(t>=sq[j][0])k=sq[j][1];if(k!==cur){cur=k;[].forEach.call(N,function(x,j){x.classList.toggle("on",j===k)})}}
+  v.addEventListener("timeupdate",sync);
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){v.removeAttribute("autoplay");v.pause();return}
+  function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}
+  if("IntersectionObserver"in window)new IntersectionObserver(function(es){es[0].isIntersecting?play():v.pause()}).observe(v);else play()}
+function hero(){heroVid();var r=$("rot");if(!r)return;var L=[r.children,$("rname").children,$("rdots").children],i=0,T=null;
   function go(k){i=(k+L[0].length)%L[0].length;L.forEach(function(G){[].forEach.call(G,function(x,j){x.classList.toggle("on",j===i)})})}
   function auto(){clearInterval(T);if(matchMedia("(prefers-reduced-motion:reduce)").matches||L[0].length<2)return;T=setInterval(function(){if(!document.hidden)go(i+1)},3200)}
   [].forEach.call(L[2],function(b,j){b.addEventListener("click",function(){go(j);auto()})});
