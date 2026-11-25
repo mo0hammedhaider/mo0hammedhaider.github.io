@@ -250,6 +250,12 @@ function init(){renderAll();loadCounters();hero();gallery();motion();
   addEventListener("scroll",stk,{passive:true});addEventListener("resize",stk);stk();
   if("IntersectionObserver"in window)
     new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting)once("ViewContent",{content_ids:["hair-treatment-"+state.bundle],content_type:"product",value:pxVal(price(state.bundle)),currency:pxCur()})})},{threshold:.3}).observe($("bundles"));
+  /* 2026-11-25 (محمد): قياس وصول الأقسام: كل قسم يدز حدث بكسل واحد أول ما يدخل الشاشة: Sec_<الصفحة>_<ترتيبه>_<القسم> */
+  if("IntersectionObserver"in window)(function(){var app=document.querySelectorAll("body section"),tops=[].filter.call(app,function(s){return s.id==="bundles"||!(s.parentNode&&s.parentNode.closest&&s.parentNode.closest("section"))}),seen={};
+    function key(s){if(s.id)return s.id;var c=[].filter.call(s.classList,function(x){return x!=="sec"&&x!=="dark"})[0];return c||"s"}
+    var sio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var s=e.target,k=key(s);sio.unobserve(s);if(seen[k])return;seen[k]=1;var n=tops.indexOf(s)+1,ev="Sec_"+(P.slug||"hair")+"_"+(n<10?"0":"")+n+"_"+k;
+      if(LOCAL){try{console.log("[TEST] بكسل:",ev)}catch(x){}return}try{if(window.fbq&&window.AJ_PIXEL)fbq("trackCustom",ev,{sec:k,pos:n})}catch(x){}})},{rootMargin:"0px 0px -30% 0px",threshold:0});
+    tops.forEach(function(s){sio.observe(s)})})();
   /* طلب قديم ما وصل؟ نعيد إرساله بهدوء */
   setTimeout(function(){pend().forEach(function(o){send(o).then(function(){dropPend(o.order_id)}).catch(function(){})})},3000);
   addEventListener("online",bgRetry);
