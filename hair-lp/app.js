@@ -4,7 +4,7 @@ var C=window.HAIR_CFG,P=window.PAGE,HB=window.HB||"/",$=function(s){return docum
 var money=function(n){return Number(n||0).toLocaleString("en-US")};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
 var NAMES={1:"قنينة وحدة",2:"قنينتين",3:"ثلاث قناني"};
-var state={bundle:2,opt:{1:0,2:0,3:0},heads:null,today:null,busy:false,addon:null,upDone:false};
+var state={bundle:1,opt:{1:0,2:0,3:0},heads:null,today:null,busy:false,addon:null,upDone:false};
 var GOV_EN={"بغداد":"baghdad","البصرة":"basra","نينوى":"nineveh","أربيل":"erbil","النجف":"najaf","كربلاء":"karbala","بابل":"babil","ذي قار":"dhiqar","الأنبار":"anbar","ديالى":"diyala","صلاح الدين":"salahaddin","كركوك":"kirkuk","واسط":"wasit","ميسان":"maysan","القادسية":"diwaniyah","المثنى":"muthanna","السليمانية":"sulaymaniyah","دهوك":"duhok","حلبجة":"halabja"};
 
 /* ===== مصدر الزيارة: UTM و fbclid و code ===== */
