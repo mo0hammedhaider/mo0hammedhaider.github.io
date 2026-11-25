@@ -210,14 +210,13 @@ function go(f){state.busy=true;var o=buildOrder(f,cur.id);addPend(o);
 
 /* ===== عرض بعد «أكّد الطلب»: عطر للجسم على نفس الطلب ونفس التوصيل (طلب واحد، Purchase واحد) ===== */
 var upT=null,upF=null;
-function openUp(U,f){upF=f;var fm=P.g==="f",base=price(f.bundle)+Number(C.delivery_fee||0),sv=Number(U.was)-Number(U.price);
-  $("upSheet").innerHTML='<span class="grab"></span><p class="uk">'+esc(U.h)+'</p>'+
-    '<div class="uh"><div class="ui"><img src="'+HB+'hair-lp/img/'+esc(U.img)+'.webp" alt="عطر '+esc(U.name)+'"></div><div class="ux"><small>'+esc(U.sub||"")+'</small><h3>عطر '+esc(U.name)+'</h3>'+
-    '<p class="hp"><s>'+money(U.was)+'</s><span>'+money(U.price)+' د.ع</span></p><em class="usv">'+(fm?"توفرين ":"توفّر ")+money(sv)+'</em>'+(U.story?'<p class="ust">'+esc(U.story)+'</p>':"")+'</div></div>'+
-    '<p class="ul">'+esc(U.lead||"")+'</p><ul class="hwhy">'+(U.why||[]).map(function(w){return"<li>"+esc(w)+"</li>"}).join("")+'</ul>'+
-    '<div class="utot"><span>المجموع ويا العطر</span><b class="num">'+money(base+Number(U.price))+' د.ع</b></div>'+
-    '<button type="button" class="add" id="addH">'+esc(U.add)+'</button><button type="button" class="skip" id="skipH">'+esc(U.skip)+' · '+money(base)+' د.ع</button>'+
-    '<div class="uload"><span class="spin"></span>نثبّت طلبك…</div>';
+function openUp(U,f){upF=f;var fm=P.g==="f",sv=Number(U.was)-Number(U.price);
+  $("upSheet").innerHTML='<span class="grab"></span><p class="uok">'+esc(U.ok||"")+' <i>✓</i></p><h3 class="uh2">'+esc(U.h)+'</h3><p class="ul">'+esc(U.lead||"")+'</p><hr class="uhr">'+
+    '<div class="upd"><img src="'+HB+'hair-lp/img/'+esc(U.img)+'.webp" alt="عطر '+esc(U.name)+'"><div><b>عطر '+esc(U.name)+'</b><small>'+esc(U.sub||"")+'</small></div></div>'+
+    '<p class="uwas"><s>'+money(U.was)+' د.ع</s></p><p class="unow num">'+money(U.price)+' <span>د.ع</span></p>'+
+    '<p class="usave"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>'+(fm?"توفرين ":"توفر ")+'<b class="num">'+money(sv)+'</b> د.ع</p>'+
+    '<button type="button" class="add" id="addH">'+esc(U.add)+'</button><button type="button" class="skip" id="skipH">'+esc(U.skip)+'</button>'+
+    '<div class="uload"><span class="spin"></span>لحظة…</div>';
   var m=$("up");m.classList.add("open");document.body.classList.add("lock");$("upSheet").scrollTop=0;
   $("addH").onclick=function(){state.addon={id:U.id,name:U.name,price:U.price,was:U.was};finishUp()};
   $("skipH").onclick=function(){state.addon=null;finishUp()};
