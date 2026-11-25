@@ -192,6 +192,7 @@ section{position:relative}
 .ib .for{font-size:11px;font-weight:700;background:var(--br);color:var(--iv);padding:2px 8px;border-radius:99px}
 .ib em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:1px}
 .ib .wh{font-size:13.5px;line-height:1.55;color:#5d4a38;margin-top:4px}
+.ib .vb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--br);background:#f3ebe2;border:1px solid var(--line);padding:2px 10px;border-radius:99px;margin-top:6px}
 .ib .wh span{display:none;font-size:12px;font-weight:900;color:var(--br)}
 /* الضمان */
 .guar{padding:56px 0 50px;text-align:center}
@@ -407,7 +408,61 @@ body.lock{overflow:hidden}
 .thx .wa p{font-size:14px;line-height:1.75;color:#3d5a46;margin-top:6px}
 .thx .wab{display:flex;align-items:center;justify-content:center;gap:9px;height:56px;margin-top:14px;border-radius:16px;background:#25D366;color:#fff;font-weight:900;font-size:17px;text-decoration:none;box-shadow:0 8px 20px rgba(37,211,102,.3)}
 .thx .wab svg{width:24px;height:24px;flex:none}
-.hcard .hq b{font-weight:900;font-size:17px}</style><script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window,document);window.AJ_PIXEL='2890047974682209';fbq('init',AJ_PIXEL,window.AJ_AM||{});fbq('track','PageView');addEventListener('load',function(){if(/^(localhost|127[.]0[.]0[.]1)$/.test(location.hostname))return;setTimeout(function(){var s=document.createElement('script');s.async=1;s.src='https://connect.facebook.net/en_US/fbevents.js';document.head.appendChild(s)},1200)});</script></head><body class="men"><div class="page">
+.hcard .hq b{font-weight:900;font-size:17px}
+.step .si{position:relative;flex:none;width:50px;height:50px;border-radius:50%;border:1.5px solid var(--br);color:var(--br);background:var(--card);padding:11px}
+.step .si svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.step .si i{position:absolute;top:-4px;right:-4px;width:20px;height:20px;font-size:11px;background:var(--br);color:var(--iv)}
+.qseg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.qb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:12px;border:1.5px solid rgba(249,243,237,.22);background:rgba(249,243,237,.06);color:var(--iv);font-size:14px;line-height:1.3}
+.qb b{font-weight:700}
+.qb span{font-family:M;font-size:13px;opacity:.75}
+.qb.on{background:var(--iv);color:var(--br);border-color:var(--iv)}
+.qb.on span{opacity:1}
+/* فيديوات الزباين الحقيقية داخل قسم الآراء (2026-11-25) */
+.rvv{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px var(--pad) 6px;scrollbar-width:none;scroll-padding:0 var(--pad)}
+.rvv::-webkit-scrollbar{display:none}
+.rvv.one{justify-content:center}.rvv.one .reel{flex:0 0 auto;width:min(62vw,260px);max-width:none}
+.rvv .lab{inset:10px 10px auto auto;padding:4px 10px;border-radius:99px;background:rgba(30,20,12,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.rvv .lab b{display:none}.rvv .lab span{font-size:11px;opacity:1;font-weight:600}
+.gal.one img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+/* فيديو الهيرو: الشعر ينزل والقنينة تتبدل (2026-11-25) — خلفيته ملوّنة بلون الصفحة وأطرافه تذوب */
+.stage.vid{height:auto;margin-top:6px}
+.stage.vid .hv{display:block;width:100%;max-width:440px;height:auto;aspect-ratio:720/1004;margin:0 auto;object-fit:cover;background:var(--iv);
+-webkit-mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 94%,transparent),linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);-webkit-mask-composite:source-in;
+mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 94%,transparent),linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}
+.stage.vid .rname{position:relative;bottom:auto;height:44px;margin-top:-2px}
+.stage.vid .spec{position:static;transform:none;justify-content:center;margin-top:8px}
+.stage.vid .seal{top:2px;width:96px;height:96px}
+/* عرض الإضافة بعد التثبيت (2026-11-25) */
+.sheet .uok{text-align:center;font-size:14px;font-weight:700;color:var(--muted);margin:2px 0 8px}
+.sheet .uok i{font-style:normal;color:var(--ok);font-weight:900}
+.sheet .uh2{text-align:center;font-size:25px;font-weight:900;color:var(--deep);line-height:1.35}
+.sheet .ul{text-align:center;font-size:15.5px;color:var(--ink);line-height:1.75;margin:8px 4px 0}
+.sheet .uhr{border:0;border-top:1px solid var(--line);margin:16px 6px 12px}
+.upd{display:flex;align-items:center;justify-content:center;gap:10px}
+.upd img{height:64px;width:auto;filter:drop-shadow(0 6px 8px rgba(61,44,29,.2))}
+.upd b{display:block;font-size:16px;font-weight:900;color:var(--br)}
+.upd small{font-size:12px;color:var(--muted)}
+.uwas{text-align:center;margin-top:10px}
+.uwas s{color:var(--muted);font-size:19px;font-weight:700}
+.unow{text-align:center;font-size:44px;font-weight:900;color:var(--ok);line-height:1.15;direction:rtl}
+.unow span{font-size:30px}
+.usave{display:flex;width:fit-content;margin:8px auto 18px;align-items:center;gap:7px;padding:8px 18px;border-radius:14px;background:var(--okbg);color:var(--okt);font-weight:900;font-size:16px;border:1px solid rgba(61,107,69,.18)}
+.usave svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+/* أصغر حتى «إكمال بدون إضافة» يبين (2026-11-25) */
+.sheet .grab{margin-bottom:8px}
+.sheet .uok{font-size:13px;margin:0 0 4px}
+.sheet .uh2{font-size:20px}
+.sheet .ul{font-size:13.5px;line-height:1.6;margin-top:4px}
+.sheet .uhr{margin:10px 6px 8px}
+.upd{gap:8px}.upd img{height:44px}
+.upd b{font-size:15px}.upd small{font-size:12.5px;color:var(--body)}
+.uwas{margin-top:6px}.uwas s{font-size:15px}
+.unow{font-size:34px;line-height:1.1}.unow span{font-size:22px}
+.usave{margin:6px auto 12px;padding:5px 14px;font-size:14px;border-radius:12px}
+.usave svg{width:17px;height:17px}
+.sheet .add{height:50px;font-size:17px}
+.sheet .skip{margin-top:4px;padding:10px;font-size:14.5px;color:var(--ink)}</style><script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window,document);window.AJ_PIXEL='2890047974682209';fbq('init',AJ_PIXEL,window.AJ_AM||{});fbq('track','PageView');addEventListener('load',function(){if(/^(localhost|127[.]0[.]0[.]1)$/.test(location.hostname))return;setTimeout(function(){var s=document.createElement('script');s.async=1;s.src='https://connect.facebook.net/en_US/fbevents.js';document.head.appendChild(s)},1200)});</script></head><body class="men"><div class="page">
 <header class="hdr"><img src="../../hair-lp/img/logo.webp" alt="" width="90" height="80"><b>دار الجسمي للعطور</b></header>
 <main class="thx"><div class="ok"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h1>وصل طلبك ✓ راح نتصل بيك للتأكيد.</h1>
 <div class="card" id="card" hidden></div>
@@ -415,4 +470,4 @@ body.lock{overflow:hidden}
 <a class="wab" id="waGo" target="_blank" rel="noopener" href="https://wa.me/9647760060015"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.6 7.3c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.8 1.9c.1.2 0 .4-.1.6l-.5.6c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.4.4 0 .6-.2 1.2-.7 1.5-.5.3-1.2.5-2 .3-1.3-.3-2.6-1.1-3.7-2.2-1-1-1.8-2.3-2-3.5-.2-.9.1-1.7.6-2.3z" fill="currentColor"/></svg>أكّد طلبك بالواتساب</a></div>
 <p class="note">خلّي تلفونك قريب، نتصل من رقم عراقي خلال ساعات الدوام.</p></main>
 <footer class="foot thin"><img src="../../hair-lp/img/logo.webp" alt="" width="90" height="80"><b>دار الجسمي للعطور</b><p>فرعنا الرئيسي بالمنصور، بغداد</p></footer></div>
-<script>window.HB="../../";window.PAGE={"slug":"men"};</script><script src="../../hair-lp/thanks.js?v=ed343776" defer></script></body></html>
+<script>window.HB="../../";window.PAGE={"slug":"men"};</script><script src="../../hair-lp/thanks.js?v=8a1b2835" defer></script></body></html>
