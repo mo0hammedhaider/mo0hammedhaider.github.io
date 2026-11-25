@@ -464,3 +464,18 @@ mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 94%,transparent),l
 .unow span{font-size:30px}
 .usave{display:flex;width:fit-content;margin:8px auto 18px;align-items:center;gap:7px;padding:8px 18px;border-radius:14px;background:var(--okbg);color:var(--okt);font-weight:900;font-size:16px;border:1px solid rgba(61,107,69,.18)}
 .usave svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+
+/* أصغر حتى «إكمال بدون إضافة» يبين (2026-11-25) */
+.sheet .grab{margin-bottom:8px}
+.sheet .uok{font-size:13px;margin:0 0 4px}
+.sheet .uh2{font-size:20px}
+.sheet .ul{font-size:13.5px;line-height:1.6;margin-top:4px}
+.sheet .uhr{margin:10px 6px 8px}
+.upd{gap:8px}.upd img{height:44px}
+.upd b{font-size:15px}.upd small{font-size:12.5px;color:var(--body)}
+.uwas{margin-top:6px}.uwas s{font-size:15px}
+.unow{font-size:34px;line-height:1.1}.unow span{font-size:22px}
+.usave{margin:6px auto 12px;padding:5px 14px;font-size:14px;border-radius:12px}
+.usave svg{width:17px;height:17px}
+.sheet .add{height:50px;font-size:17px}
+.sheet .skip{margin-top:4px;padding:10px;font-size:14.5px;color:var(--ink)}
