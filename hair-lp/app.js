@@ -1,5 +1,7 @@
 /* صفحات هبوط معالج الشعر — الجسمي. كل شي يتغيّر من config.json */
 (function(){"use strict";
+/* حماية التجارب المحلية: من localhost ما يندز أي طلب ولا تتبع */
+var LOCAL=location.protocol==="file:"||/^(localhost|127[.]0[.]0[.]1|\[::1\])$|[.](localhost|test)$/.test(location.hostname);
 var C=window.HAIR_CFG,P=window.PAGE,HB=window.HB||"/",$=function(s){return document.getElementById(s)};
 var money=function(n){return Number(n||0).toLocaleString("en-US")};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
@@ -15,7 +17,7 @@ var SRC=(function(){var k="hair_src",q=new URLSearchParams(location.search),v={}
 
 /* ===== التتبع ===== */
 var fired={};
-function track(ev,p,o){try{if(window.fbq&&window.AJ_PIXEL)fbq("track",ev,p||{},o||{})}catch(e){}}
+function track(ev,p,o){if(LOCAL)return;try{if(window.fbq&&window.AJ_PIXEL)fbq("track",ev,p||{},o||{})}catch(e){}}
 function once(ev,p){if(fired[ev])return;fired[ev]=1;track(ev,p)}
 /* ميتا ما تقبل الدينار (IQD) كعملة، فالقيمة تنحسب بالدولار للبكسل والـCAPI بس — الطلب والشيت يبقون بالدينار */
 function pxCur(){return(C.pixel_currency||"USD").toUpperCase()}
@@ -185,7 +187,8 @@ function pend(){try{return JSON.parse(localStorage.getItem(PK)||"[]")}catch(e){r
 function savePend(L){try{localStorage.setItem(PK,JSON.stringify(L.slice(-5)))}catch(e){}}
 function addPend(o){var L=pend().filter(function(x){return x.order_id!==o.order_id});L.push(o);savePend(L)}
 function dropPend(id){savePend(pend().filter(function(x){return x.order_id!==id}))}
-function send(o){if(!C.order_webhook_url)return Promise.reject(new Error("no webhook"));
+function send(o){if(LOCAL){try{console.warn("[تجربة محلية] الطلب ما اندز",o)}catch(e){}return new Promise(function(r){setTimeout(function(){r(o)},300)})}
+  if(!C.order_webhook_url)return Promise.reject(new Error("no webhook"));
   var ctl=window.AbortController?new AbortController():null,to=setTimeout(function(){ctl&&ctl.abort()},20000);
   return fetch(C.order_webhook_url,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(o),redirect:"follow",signal:ctl?ctl.signal:undefined})
     .then(function(r){clearTimeout(to);if(!r.ok)throw new Error("http "+r.status);return r.text()}).then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}if(j&&j.ok===false)throw new Error(j.error||"rejected");
@@ -226,9 +229,9 @@ function openUp(U,f){upF=f;var fm=P.g==="f",sv=Number(U.was)-Number(U.price);
 function finishUp(){if(state.busy)return;state.upDone=true;clearTimeout(upT);$("upSheet").classList.add("loading");go(upF)}
 function closeUp(){var m=$("up");if(!m)return;m.classList.remove("open");document.body.classList.remove("lock");$("upSheet").classList.remove("loading")}
 /* إذا سكّر الصفحة والعرض مفتوح: الطلب الأصلي (بدون العطر) ما يضيع */
-addEventListener("pagehide",function(){var m=$("up");if(!m||!m.classList.contains("open")||state.busy||!upF||!navigator.sendBeacon||!C.order_webhook_url)return;
+addEventListener("pagehide",function(){var m=$("up");if(LOCAL||!m||!m.classList.contains("open")||state.busy||!upF||!navigator.sendBeacon||!C.order_webhook_url)return;
   state.addon=null;var o=buildOrder(upF,cur.id);try{if(navigator.sendBeacon(C.order_webhook_url,new Blob([JSON.stringify(o)],{type:"text/plain;charset=UTF-8"}))){state.upDone=true;dropPend(o.order_id)}}catch(e){}})
-function bgRetry(){var L=pend();if(!L.length)return;var o=L[L.length-1];send(o).then(function(){if(cur&&cur.id===o.order_id&&!state.busy)done(o);else dropPend(o.order_id)}).catch(function(){})}
+function bgRetry(){if(LOCAL)return;var L=pend();if(!L.length)return;var o=L[L.length-1];send(o).then(function(){if(cur&&cur.id===o.order_id&&!state.busy)done(o);else dropPend(o.order_id)}).catch(function(){})}
 
 /* ===== التشغيل ===== */
 function init(){renderAll();loadCounters();hero();gallery();motion();

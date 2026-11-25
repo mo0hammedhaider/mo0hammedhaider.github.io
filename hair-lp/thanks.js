@@ -1,5 +1,5 @@
 /* صفحة الشكر — تعرض ملخص الطلب وتطلق Purchase مرة وحدة بنفس event_id اللي راح للسيرفر */
-(function(){"use strict";
+(function(){"use strict"; var LOCAL=location.protocol==="file:"||/^(localhost|127[.]0[.]0[.]1|\[::1\])$|[.](localhost|test)$/.test(location.hostname);
 var o=null;try{o=JSON.parse(sessionStorage.getItem("hair_last")||"null")}catch(e){}
 if(!o||!o.order_id)return;
 var money=function(n){return Number(n||0).toLocaleString("en-US")};
@@ -17,9 +17,9 @@ var w=document.getElementById("wa"),g=document.getElementById("waGo");
 if(w&&g){/* 2026-11-25 🔒 قاعدة كل صفحات الهبوط: رسالة الواتساب بيها تفاصيل الطلب مختصرة */
   var it="معالج الشعر · "+NAMES[o.bundle]+((o.scents||[]).length?" ("+o.scents.join(" + ")+")":"")+(o.spare_head?" + راس بخاخ هدية":"")+(o.addon?" + عطر "+o.addon.name:"");
   g.href="https://wa.me/9647760060015?text="+encodeURIComponent(["هلا، هذا تأكيد طلبي من صفحة معالج الشعر ✅","رقم الطلب: "+o.order_id,"الاسم: "+(o.name||""),"الطلب: "+it,"المجموع عند الاستلام: "+money(o.total)+" د.ع (ويه التوصيل)","العنوان: "+o.governorate+" - "+o.area].join("\n"));w.hidden=false;
-  g.addEventListener("click",function(){try{window.fbq&&fbq("track","Contact",{content_name:"wa_confirm"})}catch(e){}})}
+  g.addEventListener("click",function(){try{!LOCAL&&window.fbq&&fbq("track","Contact",{content_name:"wa_confirm"})}catch(e){}})}
 var key="hair_px_"+o.order_id;try{if(localStorage.getItem(key))return}catch(e){}
-function fire(){if(!window.fbq||!window.AJ_PIXEL)return false;
+function fire(){if(LOCAL)return true;if(!window.fbq||!window.AJ_PIXEL)return false;
   /* المطابقة المتقدمة انطت ويا أول init بالـhead (window.AJ_AM) */
   try{fbq("track","Purchase",{value:o.px_value!=null?o.px_value:o.total,currency:o.px_cur||"IQD",content_ids:o.ids||["hair-treatment-"+o.bundle],content_type:"product",num_items:o.bundle+(o.addon?1:0)},{eventID:o.order_id});
     localStorage.setItem(key,"1")}catch(e){}return true}
