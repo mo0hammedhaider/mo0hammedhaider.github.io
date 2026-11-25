@@ -146,6 +146,15 @@ A.push('<footer class="foot"><div class="wrap"><img src="../lp/logo-light.png" a
 A.push('<div class="sticky" id="sticky"><div class="in"><div class="pr"><small id="stLab">'+esc(LP.name)+'</small><b><span id="stPr"></span> <small>د.ع</small></b></div><a class="go" href="#order" data-go>'+(V2?'اطلب هسه<small>تدفع عند الاستلام</small>':'اطلب هسه')+'</a></div></div><div class="modal" id="up"><div class="sheet" id="upSheet"></div></div>');
 if(LP.formEarly&&iBox>=0&&iOrd>iBox){var OS=A.splice(iOrd,1)[0];A.splice(iBox+1,0,OS)} // 2026-11-24: الفورم بعد شرح العطور مباشرة (92% ما يوصلون للفورم بالشاشة 7)
 document.getElementById("app").innerHTML=A.join("");
+// 2026-11-25 (محمد): بعد السلم السعري ← الفيديوات ← الآراء المكتوبة ← باقي المسار. صفحات v1 الطلب ينصعد بعد الهيرو مباشرة
+if(LP.vidsUp){var _od=document.getElementById("order");if(_od){var _p=_od.parentNode,_hr=_p.querySelector(":scope > section.hero");if(!V2&&_hr)_p.insertBefore(_od,_hr.nextSibling);var _l=_od;["reels","rev"].forEach(function(k){var x=document.getElementById(k);if(x&&x.parentNode===_p){_p.insertBefore(x,_l.nextSibling);_l=x}})}}
+// 2026-11-25 (محمد): قياس وصول الأقسام: كل قسم رئيسي يدز حدث بكسل واحد أول ما 30% منه يدخل الشاشة: Sec_<الصفحة>_<ترتيبه>_<القسم>. الترتيب يتحسب لحظة الوصول (fer.js يعيد الترتيب بعدين)
+(function(){if(!window.IntersectionObserver)return;var app=document.getElementById("app");if(!app)return;var seen={};
+  function tops(){return [].filter.call(app.querySelectorAll("section"),function(s){return !(s.parentNode&&s.parentNode.closest&&s.parentNode.closest("section"))})}
+  function key(s){if(s.id)return s.id;var c=[].filter.call(s.classList,function(x){return x!=="sec"&&x!=="dark"&&x!=="v2"})[0];return c||"s"}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var s=e.target,k=key(s);io.unobserve(s);if(seen[k])return;seen[k]=1;var n=tops().indexOf(s)+1;track("Sec_"+LP.slug+"_"+(n<10?"0":"")+n+"_"+k,{sec:k,pos:n})})},{rootMargin:"0px 0px -30% 0px",threshold:0});
+  function scan(){tops().forEach(function(s){if(!s.__sv){s.__sv=1;io.observe(s)}})}
+  scan();setTimeout(scan,1200);window.addEventListener("load",function(){setTimeout(scan,300)})})();
 
 /* ===== التفاعل ===== */
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.12});
@@ -273,6 +282,16 @@ function showCheck(){clearTimeout(AUTO);
   $("#phEdit").addEventListener("click",function(){ORDER=null;$("#up").classList.remove("open");document.body.style.overflow="";var i=$("#ph");i.focus();i.select&&i.select()});
 }
 function showUpsell(){var h=HAIR.items.filter(function(x){return x.id===UPH})[0];
+  // 2026-11-25 (محمد): ناس تضيف عطر الشعر بالغلط وترجع تلغي ← نفس شكل عرض صفحات الشعر: الصورة، السعر قبل/بعد، التوفير، المجموع الجديد، وزرّين كاملين واضحين. (الهيبة تبقى بالشكل القديم لحد ما محمد يكول)
+  if(LP.slug!=="bf-haiba"){var nt=ORDER.total+HAIR.price+SHIP;
+    $("#upSheet").innerHTML='<p class="uq-ok"><i>✓</i> رقمك تأكد</p><h3 class="uq-h">تريد عطر شعر ويّا طلبك؟</h3><p class="uq-l">يوصلك بنفس الطلب ونفس المندوب، بدون توصيل زايد.</p><hr class="uq-hr">'+
+     '<div class="uq-p"><img src="../lp/hair-'+h.id+'.jpg" alt="عطر شعر '+h.name+'"><div><b>عطر شعر '+h.name+'</b><small>منعش، يحمي شعرك من حرارة الشسوار وبدون كحول.</small></div></div>'+
+     '<p class="uq-was"><s class="n">'+money(HAIR.was)+' د.ع</s></p><p class="uq-now"><span class="n">'+money(HAIR.price)+'</span> د.ع</p>'+
+     '<p class="uq-sv">توفير <b class="n">'+money(HAIR.was-HAIR.price)+'</b> د.ع</p>'+
+     '<p class="uq-tot">إذا ضفته المجموع يصير <b class="n">'+money(nt)+'</b> د.ع ويه التوصيل</p>'+
+     '<button class="add" id="addH">إي، ضيف عطر الشعر</button><button class="uq-no" id="skipH">لا، كمّل طلبي بدون عطر شعر</button>';
+    $("#addH").addEventListener("click",function(){finish(UPH)});$("#skipH").addEventListener("click",function(){finish(null)});
+    clearTimeout(AUTO);AUTO=setTimeout(function(){finish(null)},90000);return}
   // 2026-11-24 بطلب محمد: الزر الكبير = الاستمرار بدون عطر الشعر، والإضافة خيار صغير تحته (حتى محد يتلخبط ويطلع)
   $("#upSheet").innerHTML='<div class="ok1">✓ رقمك تأكد</div>'+
    '<button class="add" id="skipH">استمرار بدون عطر شعر</button>'+
