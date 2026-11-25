@@ -60,6 +60,8 @@ if(V2) A.push('<section class="hero v2"><div class="wrap"><div class="en">'+esc(
   '<p class="sub">'+LP.hero.sub+'</p>'+
   '<div class="pp" id="pp"></div>'+
   '<a class="cta" href="#order" data-go>اطلب هسه، <small>تدفع عند الاستلام</small></a>'+
+  // 2026-11-25 (محمد): إثبات بأول شاشتين — كروت نص من رسائل الزباين الحقيقية (نفس LP.quotes) تنسحب يمين ويسار تحت كروت السعر، والفورم يبقى بمكانه
+  (LP.heroQ&&LP.quotes&&LP.quotes.length?'<div class="hshots"><div class="hsh-h"><b>شنو كالوا زباينا</b><a href="#rev">شوف السكرينات ←</a></div><div class="hsrow">'+LP.quotes.slice(0,LP.heroQ).map(function(q){return'<div class="qt hq"><div class="st">★★★★★</div><p>«'+esc(q[0])+'»</p><div class="w"><span>'+(LP.qWho||"زبون من زبائن الجسمي")+'</span>'+(q[1]?"<em>"+esc(q[1])+"</em>":"")+'</div></div>'}).join("")+'</div></div>':"")+
   '<div class="g3">'+[[ICON.test,"توصلك ويّا تيستر","تشمها كبال المندوب قبل لا تدفع"],[ICON.back,"7 أيام تبدّل أو ترجّع","حتى لو فاتحها"],[ICON.cash,"الدفع عند الاستلام","ما تدفع ولا دينار هسه"]].map(function(g){return'<div class="g"><i>'+g[0]+'</i><b>'+g[1]+'</b><span>'+g[2]+'</span></div>'}).join("")+'</div>'+
   '<div class="proof"><div class="pf"><b>+<span class="n">579,000</span> طلب</b><small>خلال 2026 · لكل العراق</small></div><div class="pf" id="live" hidden><span class="dot"></span><b><span class="n" id="liveNow"></span> يتصفحون هسه</b></div></div></div></section>');
 else A.push('<section class="hero"><div class="wrap"><div class="en">'+esc(LP.en)+'</div><h1>'+esc(LP.name)+'</h1><p class="tag">'+LP.hero.tag+'</p>'+
