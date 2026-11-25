@@ -432,3 +432,9 @@ body.lock{overflow:hidden}
 .qb span{font-family:M;font-size:13px;opacity:.75}
 .qb.on{background:var(--iv);color:var(--br);border-color:var(--iv)}
 .qb.on span{opacity:1}
+/* فيديوات الزباين الحقيقية داخل قسم الآراء (2026-11-25) */
+.rvv{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px var(--pad) 6px;scrollbar-width:none;scroll-padding:0 var(--pad)}
+.rvv::-webkit-scrollbar{display:none}
+.rvv.one{justify-content:center}.rvv.one .reel{flex:0 0 auto;width:min(62vw,260px);max-width:none}
+.rvv .lab{inset:10px 10px auto auto;padding:4px 10px;border-radius:99px;background:rgba(30,20,12,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.rvv .lab b{display:none}.rvv .lab span{font-size:11px;opacity:1;font-weight:600}
