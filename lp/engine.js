@@ -309,7 +309,9 @@ function loading(){$("#upSheet").innerHTML='<div class="ld"><div class="spin"></
 function finish(hairId,silent){if(SENT)return;clearTimeout(AUTO);ORDER.hair=hairId||null;if(!silent)loading();
   SENT=placeOrder(ORDER).then(function(){clearInterval(LDI);done()}).catch(function(){clearInterval(LDI);SENT=null;
     $("#upSheet").innerHTML='<h3>صار خلل بالاتصال</h3><p class="lead">طلبك ما وصل بعد. جرّب مرة ثانية.</p><button class="add" id="retry">أعد المحاولة</button>';$("#retry").addEventListener("click",function(){finish(hairId)})})}
-function beacon(){if(TEST)return;try{SENT=true;BEACONED=true;navigator.sendBeacon(RELAY,new Blob([JSON.stringify(payload(ORDER))],{type:"text/plain;charset=UTF-8"}))}catch(e){}}
+// رقم الطلب يروح لنظام الزبائن (Royal CRM) حتى المنتظر الي اشترى ينشال وما يتصلون بيه
+function crm(p){if(TEST)return;try{navigator.sendBeacon("https://cx.luxuryblack.business/api/lp/order",new Blob([JSON.stringify({order_id:p.ref,phone:p.phone,page:p.page||LP.slug,items:p.summary||""})],{type:"text/plain;charset=UTF-8"}))}catch(e){}}
+function beacon(){if(TEST)return;crm(payload(ORDER));try{SENT=true;BEACONED=true;navigator.sendBeacon(RELAY,new Blob([JSON.stringify(payload(ORDER))],{type:"text/plain;charset=UTF-8"}))}catch(e){}}
 // رجع للصفحة بعد ما انرسل الطلب وهو طالع: نبينله اللي انرسل فعلاً (بدون إرسال ثاني)
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&BEACONED&&ORDER&&!ORDER.shown){clearTimeout(AUTO);clearInterval(LDI);var o=ORDER;track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}),content_type:"product",value:o.total,currency:"IQD",num_items:o.items.length},{eventID:o.ref});done()}});
 function done(){ORDER.shown=true;var tot=ORDER.total+SHIP+(ORDER.hair?HAIR.price:0);
@@ -327,7 +329,7 @@ function waLink(){var o=ORDER||{},L=["هلا، هذا تأكيد طلبي من �
   if(o.items){var all=o.total+(o.hair?HAIR.price:0);
     L.push("الطلب: "+orderProd(o,1),"المجموع عند الاستلام: "+money(all+SHIP)+" د.ع (ويه التوصيل)","العنوان: "+o.governorate+" - "+o.address)}
   return "https://wa.me/"+WA+"?text="+encodeURIComponent(L.join("\n"))}
-function relay(p){p.page=LP.slug;if(TEST){try{console.log("[TEST] الطلب ما انرسل",p)}catch(e){}return new Promise(function(r){setTimeout(function(){r({ok:true})},900)})}return fetch(RELAY,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(p),redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw new Error(j.error||"relay");return j})}
+function relay(p){p.page=LP.slug;if(TEST){try{console.log("[TEST] الطلب ما انرسل",p)}catch(e){}return new Promise(function(r){setTimeout(function(){r({ok:true})},900)})}crm(p);return fetch(RELAY,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(p),redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw new Error(j.error||"relay");return j})}
 var SRC=(function(){var k="aj_src",q=new URLSearchParams(location.search),v={};["utm_source","utm_campaign","utm_content","utm_term","fbclid"].forEach(function(n){if(q.get(n))v[n]=q.get(n).slice(0,80)});
   try{if(Object.keys(v).length)sessionStorage.setItem(k,JSON.stringify(v));else v=JSON.parse(sessionStorage.getItem(k)||"{}")}catch(e){}return v})();
 /* 2026-11-25 بطلب محمد: رمز الإعلان (آخر 6 أرقام من ad.id بـutm_content={{ad.id}}) يلزگ بسطر الملاحظة، والفريق ينسخه فيوصل client_note بروزنامة */
