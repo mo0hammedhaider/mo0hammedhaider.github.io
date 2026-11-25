@@ -166,7 +166,7 @@ function alf(n){if(n%1000)return money(n);var k=n/1000;return k+(k>2&&k<11?" ا�
 function teleText(o){var cnt={};o.scents.forEach(function(s){cnt[s]=(cnt[s]||0)+1});
   var prod=Object.keys(cnt).map(function(s){return"عطر شعر "+s+(cnt[s]>1?" × "+cnt[s]:"")}).join(" + ")+(o.addon?" + عطر "+o.addon.name:"");
   var L=["الاسم : "+o.name,"الرقم : "+o.phone,"العنوان : "+o.governorate+" "+o.area,"——","تفاصيل الطلب : طلب جديد من صفحة الهبوط","المنتج : "+prod,
-    "السعر : "+alf(o.price)+" والتوصيل "+alf(o.delivery_fee),"——","ملاحظة : تجربة العطر من خلال التيستر فقط والتأكد من سلامة الطلب",prod,"","━━━━━━━━━━━━","للفريق بس (لا ينسخ):",
+    "السعر : "+alf(o.price)+" والتوصيل "+alf(o.delivery_fee),"——",(o.addon?"ملاحظة : عطر الشعر بدون تيستر، وتجربة عطر "+o.addon.name+" من خلال التيستر فقط والتأكد من سلامة الطلب":"ملاحظة : عطر الشعر بدون تيستر، التأكد من سلامة الطلب فقط"),prod,"","━━━━━━━━━━━━","للفريق بس (لا ينسخ):",
     "المجموع عند الاستلام: "+money(o.total)+" د.ع · "+NAMES[o.bundle]+(o.spare_head?" + راس بخاخ احتياطي هدية":""),"المصدر: صفحة "+P.name+(o.code?" · الكود: "+o.code:"")];
   if(o.addon)L.splice(L.length-2,0,"➕ إضافة على نفس الطلب: عطر "+o.addon.name+" ("+alf(o.addon.price)+" بدل "+alf(o.addon.was)+")");
   var a=o.utm_content||o.utm_campaign;L.push(a?"الإعلان: "+a+(o.utm_campaign&&o.utm_content?" · "+o.utm_campaign:""):(o.fbclid?"الإعلان: ميتا (بدون اسم)":"الإعلان: زيارة مباشرة"));
