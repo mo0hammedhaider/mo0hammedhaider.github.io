@@ -13,6 +13,9 @@ var SHIP=5000, DISC={1:0,2:18000,3:40000}, HAIR={was:58000,price:28000,items:[
 var money=function(n){return Number(n).toLocaleString("en-US")};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
 var ME=CAT[LP.slug]||{};
+/* 2026-11-26 (محمد): كود خصم حسن الحجاج بالهيبة بس: HH15 ينزل 15,000 فوق العرض الموجود. بالفورم «عندك كود خصم؟» أو بالرابط ?code=HH15 */
+var CPNS={"bf-haiba":{HH15:{off:15000,by:"حسن الحجاج"}}}[LP.slug]||null, CPN=null;
+function cpnOff(){return CPN?CPN.off:0}
 var X=window.LPX||{}; // 2026-11-24: أقسام خاصة لصفحة وحدة (فيرونتي) بدون ما تتأثر الباقي
 if(LP.cls)document.documentElement.classList.add(LP.cls);
 var ICON={
@@ -37,7 +40,8 @@ function qty(){return TIERS[SEL].q}
 function items(){var a=[];for(var i=0;i<qty();i++)a=a.concat(BASE);return a.concat(EXTRA)}
 function sum(){return items().reduce(function(a,s){return a+(CAT[s]?CAT[s].price:0)},0)}
 function exSum(){return EXTRA.reduce(function(a,s){return a+CAT[s].price},0)}
-function total(){if(LP.bundle)return TIERS[SEL].price+exSum()-EXTRA.length*DISC[2];
+function total(){return total0()-cpnOff()}
+function total0(){if(LP.bundle)return TIERS[SEL].price+exSum()-EXTRA.length*DISC[2];
   return U*qty()+exSum()-dN(qty()+EXTRA.length)}
 function disc(){return sum()-total()}
 function unitName(q){if(LP.units&&LP.units[q-1])return LP.units[q-1];return LP.bundle?(q===1?"عرض واحد":q===2?"عرضين":q+" عروض"):(q===1?"عطر واحد":q===2?"عطرين":q+" عطور")}
@@ -131,6 +135,7 @@ iOrd=A.length;A.push('<section class="order dark" id="order"><div class="wrap"><
   '<button type="button" class="ph2b" id="ph2b">+ عندك رقم ثاني؟ <small>(اختياري)</small></button><div class="f" id="ph2f" hidden><label for="ph2">رقم ثاني <small>(اختياري)</small></label><input id="ph2" inputmode="numeric" autocomplete="tel" placeholder="07xxxxxxxxx" dir="ltr" style="text-align:right"><div class="hint">إذا رقمك الأول طافي أو خارج التغطية نتصل على هذا</div><div class="em">الرقم الثاني لازم 11 رقم يبدي بـ07، ومو نفس الأول</div></div>'+
   '<div class="f"><label for="gv">المحافظة</label><select id="gv"><option value="">اختار المحافظة</option></select><div class="em">اختار المحافظة</div></div>'+
   '<div class="f"><label for="ad">العنوان</label><textarea id="ad" placeholder="المنطقة، أقرب نقطة دالة"></textarea><div class="em">اكتب العنوان</div></div>'+
+  (CPNS?'<button type="button" class="ph2b" id="cpB">عندك كود خصم؟</button><div class="f cpf" id="cpF" hidden><label for="cp">كود الخصم</label><div class="cprow"><input id="cp" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="اكتب الكود" dir="ltr"><button type="button" id="cpGo">طبّق</button></div><div class="hint" id="cpMsg"></div></div>':"")+
   '<div class="osum" id="osum"></div><button class="submit" id="sub" type="submit">ثبّت الطلب · الدفع عند الاستلام</button>'+
   '<div class="osafe"><span>✓ تجرب التستر قبل الدفع</span><span>✓ ضمان 7 أيام</span><span>✓ نتصل بيك نأكد</span></div></form></div></section>');
 
@@ -227,13 +232,13 @@ function paintCart(){var n=items().length,d=disc(),T=TIERS[SEL];
   var mainLine=LP.bundle?'<div><span>'+esc(LP.bundle.rz)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+(LP.noSave&&T.price<W*T.q?'<s class="was">'+money(W*T.q)+'</s> '+money(T.price):money(W*T.q))+'</span></div>':'<div><span>'+esc(LP.name)+(T.q>1?" × "+T.q:"")+'</span><span class="n">'+money(U*T.q)+'</span></div>';
   var exLines=EXTRA.map(function(s){return'<div><span>'+esc(CAT[s].name)+'</span><span class="n">'+money(CAT[s].price)+'</span></div>'}).join("");
   var shownDisc=LP.bundle?EXTRA.length*DISC[2]+W*T.q-T.price:d, wasAll=LP.bundle?W*T.q+exSum():sum(), saved=wasAll-total();
-  $("#osum").innerHTML=mainLine+exLines+(shownDisc&&!LP.noSave?'<div class="sv"><span>'+(LP.bundle&&LP.bundle.was?"توفيرك":"الخصم ("+n+" عطور)")+'</span><span class="n">−'+money(shownDisc)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
+  $("#osum").innerHTML=mainLine+exLines+(shownDisc&&!LP.noSave?'<div class="sv"><span>'+(LP.bundle&&LP.bundle.was?"توفيرك":"الخصم ("+n+" عطور)")+'</span><span class="n">−'+money(shownDisc)+'</span></div>':"")+(CPN?'<div class="sv"><span>كود الخصم '+esc(CPN.code)+'</span><span class="n">−'+money(CPN.off)+'</span></div>':"")+'<div><span>التوصيل</span><span class="n">'+money(SHIP)+'</span></div><div class="tot"><span>المجموع عند الاستلام</span><span><span class="n">'+money(total()+SHIP)+'</span> د.ع</span></div>';
   if($("#pp")){$("#pp").innerHTML=TIERS.map(function(t,i){var sv=W*t.q-t.price;return'<button type="button" class="pcard'+(i===SEL?" on":"")+'" data-i="'+i+'">'+(LP.badge&&i===LP.badgeAt?'<span class="badge">'+LP.badge+'</span>':"")+
       '<span class="pl"><b>'+(t.title||unitName(t.q))+'</b><small>'+(t.sub||"")+'</small></span><span class="pv">'+(sv&&!V2?'<s class="n">'+money(W*t.q)+'</s>':"")+'<span class="big"><span class="n">'+money(t.price)+'</span> <small>د.ع</small></span>'+(sv&&V2?'<span class="was">'+(LP.wasWord||"سابقاً")+' <s class="n">'+money(W*t.q)+'</s></span>':"")+(t.q>1&&!LP.noSave?'<span class="per">'+(LP.perWord||"الباقة الوحدة بـ")+'<b class="n">'+money(t.price/t.q)+'</b></span>':"")+'</span>'+(sv&&!LP.noSave?'<span class="sv">توفّر <b class="n">'+money(sv)+'</b> د.ع</span>':"")+'</button>'}).join("");
     $$("#pp .pcard").forEach(function(b){b.addEventListener("click",function(){SEL=+b.dataset.i;paintCart();goOrder()})})}
   if($("#hNow"))$("#hNow").textContent=money(total());
   if($("#hNote"))$("#hNote").innerHTML=(n<=BASE.length)?(LP.priceNote||"")+(LP.bundle?"":'<br>عطرين بخصم <b class="n">18,000</b> · 3 بخصم <b class="n">40,000</b>'):'<s class="was n">'+money(wasAll)+'</s>'+(LP.bundle?unitName(T.q)+(EXTRA.length?" + "+EXTRA.length+(EXTRA.length>1?" عطور":" عطر"):""):n+' عطور بالطلب')+(LP.noSave?'':' · وفّرت <b class="n">'+money(saved)+'</b>');
-  $("#stPr").textContent=money(total());$("#stLab").textContent=n<=BASE.length?LP.name:(LP.bundle?unitName(T.q):n+" عطور")+(LP.noSave?"":" · وفّرت "+money(saved));
+  $("#stPr").textContent=money(total());$("#stLab").textContent=n<=BASE.length?LP.name:(LP.bundle?unitName(T.q):n+" عطور")+(LP.noSave?"":" · وفّرت "+money(saved));if(CPN)$("#stLab").textContent+=" · كود "+CPN.code;
 }
 paintCart();
 
@@ -251,6 +256,20 @@ if(X.init)try{X.init({$:$,$$:$$,goOrder:goOrder,money:money,track:track})}catch(
 var GOV=["بغداد","البصرة","نينوى","أربيل","النجف","كربلاء","بابل","ذي قار","الأنبار","ديالى","صلاح الدين","كركوك","واسط","ميسان","الديوانية","المثنى","السليمانية","دهوك","حلبجة"];
 $("#gv").innerHTML+=GOV.map(function(g){return"<option>"+g+"</option>"}).join("");
 var toEn=function(v){return String(v||"").replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632}).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776})};
+/* كود الخصم: يقبل حروف صغيرة وأرقام عربية ومسافات (hh 15 = HH15) */
+function cpnNorm(v){return toEn(v).toUpperCase().replace(/[\s\-_.]/g,"")}
+function applyCpn(v,src){var k=cpnNorm(v),c=CPNS&&CPNS[k],m=$("#cpMsg");
+  if(!c){if(m&&src==="form"){m.textContent=k?"الكود غلط، تأكد منه":"اكتب الكود";m.className="hint bad"}return false}
+  CPN={code:k,off:c.off,by:c.by};paintCart();
+  $("#cpB").hidden=true;$("#cpF").hidden=false;$("#cp").value=k;$("#cp").disabled=true;$("#cpGo").hidden=true;
+  m.innerHTML='✓ انطبق الكود: نزل <b class="n">'+money(c.off)+'</b> د.ع من المجموع';m.className="hint ok";
+  try{sessionStorage.setItem("aj_cpn",k)}catch(e){}
+  track("ApplyCoupon",{code:k,src:src});return true}
+if(CPNS){$("#cpB").addEventListener("click",function(){$("#cpF").hidden=false;this.hidden=true;$("#cp").focus()});
+  $("#cpGo").addEventListener("click",function(){applyCpn($("#cp").value,"form")});
+  $("#cp").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();applyCpn(this.value,"form")}});
+  var cq=new URLSearchParams(location.search),cs="";try{cs=sessionStorage.getItem("aj_cpn")||""}catch(e){}
+  applyCpn(cq.get("code")||cq.get("coupon")||"","link")||applyCpn(cs,"session")}
 var normPhone=function(v){var d=toEn(v).replace(/\D/g,"").replace(/^00964/,"").replace(/^964/,"");if(d.charAt(0)==="7")d="0"+d;return d};
 (function(){var ph=$("#ph"),hint=$("#phHint");
   function fix(){var v=toEn(ph.value).replace(/\D/g,"");if(v.length>11)v=v.slice(0,11);if(ph.value!==v)ph.value=v;
@@ -269,7 +288,7 @@ $("#form").addEventListener("submit",function(e){e.preventDefault();
   var nm=$("#nm").value.trim(),ph=normPhone($("#ph").value),gv=$("#gv").value,ad=$("#ad").value.trim(),ph2=normPhone($("#ph2").value);
   var bad=[setErr("nm",nm.length<2),setErr("ph",!/^07[3-9]\d{8}$/.test(ph)),setErr("ph2",!!ph2&&(!/^07[3-9]\d{8}$/.test(ph2)||ph2===ph)),setErr("gv",!gv),setErr("ad",ad.length<4)].some(Boolean);
   if(bad){var f=$(".f.err input,.f.err select,.f.err textarea");f&&f.focus();return}
-  ORDER={name:nm,phone:ph,phone2:ph2||"",governorate:gv,address:ad,items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total()};SENT=null;
+  ORDER={name:nm,phone:ph,phone2:ph2||"",governorate:gv,address:ad,items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total(),cpn:CPN};SENT=null;
   matchUser(ORDER);track("AddPaymentInfo",{value:total(),currency:"IQD"});
   showCheck();
 });
@@ -430,7 +449,7 @@ function wMount(){var box=$("#wBox");if(!box)return;
 // 2026-11-25 (محمد): رسالة الواتساب بيها تفاصيل الطلب مختصرة (مو بس رقم الطلب) — مقفلة لكل صفحات الهبوط
 function waLink(){var o=ORDER||{},L=["هلا، هذا كارت ضماني وتأكيد طلبي من صفحة "+LP.name+" ✅","🛡️ رقم الضمان: "+wSerial(o),"رقم الطلب: "+(o.ref||""),"الاسم: "+(o.name||"")];
   if(o.items){var all=o.total+(o.hair?HAIR.price:0);
-    L.push("الطلب: "+orderProd(o,1),"المجموع عند الاستلام: "+money(all+SHIP)+" د.ع (ويه التوصيل)","العنوان: "+o.governorate+" - "+o.address)}
+    L.push("الطلب: "+orderProd(o,1));if(o.cpn)L.push("كود الخصم: "+o.cpn.code+" (نزل "+money(o.cpn.off)+" د.ع)");L.push("المجموع عند الاستلام: "+money(all+SHIP)+" د.ع (ويه التوصيل)","العنوان: "+o.governorate+" - "+o.address)}
   return "https://wa.me/"+WA+"?text="+encodeURIComponent(L.join("\n"))}
 function relay(p){p.page=LP.slug;if(TEST){try{console.log("[TEST] الطلب ما انرسل",p)}catch(e){}return new Promise(function(r){setTimeout(function(){r({ok:true})},900)})}crm(p);return fetch(RELAY,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(p),redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw new Error(j.error||"relay");return j})}
 var SRC=(function(){var k="aj_src",q=new URLSearchParams(location.search),v={};["utm_source","utm_campaign","utm_content","utm_term","fbclid"].forEach(function(n){if(q.get(n))v[n]=q.get(n).slice(0,80)});
@@ -456,11 +475,13 @@ function orderText(o){
     "السعر : "+alf(all)+(rzDisc>0?" (بعد خصم "+alf(rzDisc)+")":"")+" والتوصيل "+alf(SHIP),
     "——","ملاحظة : تجربة العطر من خلال التيستر فقط والتأكد من سلامة الطلب"+adRef(),prod,
     "","━━━━━━━━━━━━","للفريق بس (لا ينسخ):","المجموع عند الاستلام: "+money(all+SHIP)+" د.ع · "+unitName(q),"المصدر: صفحة "+LP.name,"🛡️ رقم الضمان: "+wSerial(o),srcLine()].concat(o.phOk?[]:["⚠️ الزبون ما أكد رقمه (طلع قبل التأكيد): تأكدوا من الرقم"]));
+  if(o.cpn){var iP=L.findIndex(function(x){return x.indexOf("السعر : ")===0});L.splice(iP+1,0,"كود الخصم : "+o.cpn.code+" ("+o.cpn.by+") نزل "+alf(o.cpn.off));
+    var iS=L.findIndex(function(x){return x.indexOf("المصدر: ")===0});L.splice(iS+1,0,"🎟️ كود "+o.cpn.code+" · "+o.cpn.by)}
   return L.join("\n");
 }
 function capiData(v,ids,n){function ck(k){var m=document.cookie.match(new RegExp("(?:^|; )"+k+"=([^;]*)"));return m?decodeURIComponent(m[1]):""}var fbc=ck("_fbc");if(!fbc&&SRC.fbclid)fbc="fb.1."+Date.now()+"."+SRC.fbclid;return {fbp:ck("_fbp"),fbc:fbc,ua:navigator.userAgent.slice(0,400),url:location.href.split("#")[0].slice(0,500),value:v,currency:"IQD",ids:ids,n:n}}
 function payload(o){if(!o.ref)o.ref=LP.code+"-"+Date.now().toString(36).toUpperCase();
-  return {kind:"order",page:LP.slug,ref:o.ref,name:o.name,phone:o.phone,phone2:o.phone2||"",governorate:o.governorate,summary:(LP.bundle?[LP.bundle.rz+(o.q>1?" × "+o.q:"")].concat(o.items.slice(BASE.length*o.q).map(function(s){return CAT[s].name})):o.items.map(function(s){return CAT[s].name})).join(" + ")+(o.hair?" + "+hairName(o.hair):""),text:"#طلب_جديد "+o.ref+"\n"+orderText(o),capi:capiData(o.total+(o.hair?HAIR.price:0),o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),o.items.length)}}
+  return {kind:"order",page:LP.slug,ref:o.ref,name:o.name,phone:o.phone,phone2:o.phone2||"",governorate:o.governorate,summary:(LP.bundle?[LP.bundle.rz+(o.q>1?" × "+o.q:"")].concat(o.items.slice(BASE.length*o.q).map(function(s){return CAT[s].name})):o.items.map(function(s){return CAT[s].name})).join(" + ")+(o.hair?" + "+hairName(o.hair):"")+(o.cpn?" · كود "+o.cpn.code:""),text:"#طلب_جديد "+o.ref+"\n"+orderText(o),capi:capiData(o.total+(o.hair?HAIR.price:0),o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),o.items.length)}}
 function placeOrder(o){return relay(payload(o)).then(function(j){o.tgid=j&&j.id||0;track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),content_type:"product",value:o.total+(o.hair?HAIR.price:0),currency:"IQD",num_items:o.items.length},{eventID:o.ref})})}
 // مطابقة متقدمة: نعطي البكسل رقم الزبون واسمه ومحافظته لحظة «ثبّت»، والبكسل يشفّرهن بنفسه (SHA-256) قبل ما يطلعن
 var GOV_EN={"بغداد":"baghdad","البصرة":"basra","نينوى":"nineveh","أربيل":"erbil","النجف":"najaf","كربلاء":"karbala","بابل":"babil","ذي قار":"dhiqar","الأنبار":"anbar","ديالى":"diyala","صلاح الدين":"salahaddin","كركوك":"kirkuk","واسط":"wasit","ميسان":"maysan","الديوانية":"diwaniyah","المثنى":"muthanna","السليمانية":"sulaymaniyah","دهوك":"duhok","حلبجة":"halabja"};
@@ -499,6 +520,6 @@ if(inOrder)vcOnce();
 if(TEST)(function(){function a(){var b=document.createElement("div");b.className="testpill";b.textContent="وضع تجربة: ما ينرسل طلب";document.body.appendChild(b)}document.body?a():document.addEventListener("DOMContentLoaded",a)})();
 // وضع التجربة فقط: ?test=1&step=up يفتح خطوة تأكيد الرقم مباشرة (للمعاينة على التلفون)
 // وضع التجربة فقط: ?test=1&step=done يفتح شاشة «تم التثبيت» مع كارت الضمان (ما يدز شي)
-if(TEST&&/[?&]step=done(&|$)/.test(location.search)){ORDER={name:"محمد حيدر",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total(),ref:LP.code+"-"+Date.now().toString(36).toUpperCase()};SENT=null;$("#up").classList.add("open");document.body.style.overflow="hidden";done()}
-if(TEST&&/[?&]step=up(&|$)/.test(location.search)){ORDER={name:"تجربة",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total()};SENT=null;showCheck()}
+if(TEST&&/[?&]step=done(&|$)/.test(location.search)){ORDER={name:"محمد حيدر",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total(),cpn:CPN,ref:LP.code+"-"+Date.now().toString(36).toUpperCase()};SENT=null;$("#up").classList.add("open");document.body.style.overflow="hidden";done()}
+if(TEST&&/[?&]step=up(&|$)/.test(location.search)){ORDER={name:"تجربة",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total(),cpn:CPN};SENT=null;showCheck()}
 })();

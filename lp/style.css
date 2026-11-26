@@ -482,3 +482,8 @@ section{position:relative}
 .wbox .wa p{font-size:14px;margin-top:0}
 .wbox .wab{font-size:15.5px}
 .wbox .wbt{margin-top:12px}
+
+/* 2026-11-26 كود الخصم (الهيبة) */
+.cprow{display:flex;gap:8px}.cprow input{flex:1;letter-spacing:.12em;text-transform:uppercase;text-align:left}.cprow input:disabled{opacity:.75}
+.cprow button{flex:none;padding:0 20px;height:52px;border-radius:14px;background:var(--iv);color:var(--br);font-weight:900;font-size:16px}
+.f .hint.bad{color:#f0b8b0}#cpB[hidden]{display:none}
