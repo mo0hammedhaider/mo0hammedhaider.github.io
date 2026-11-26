@@ -460,3 +460,25 @@ section{position:relative}
 .hsrow::-webkit-scrollbar{display:none}
 .qt.hq{flex:0 0 84%;scroll-snap-align:start;display:flex;flex-direction:column;padding:14px 16px 12px;box-shadow:0 6px 18px rgba(40,25,10,.10)}
 .qt.hq p{font-size:15.5px;line-height:1.7;flex:1}
+/* 2026-11-26: كارت ضمان التجربة بعد التثبيت */
+.wbox{margin-top:16px;background:#fff;border:1px solid #e6d8c6;border-radius:18px;padding:14px;text-align:center}
+.wh{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.wh b{font-size:17px;color:var(--deep)}
+.wh span{font-size:13.5px;color:var(--muted)}
+.wh span b{font-size:15px;color:#4a1b1d;letter-spacing:.04em}
+#wImg{display:block;width:100%;min-height:200px;background:#1c0d0c}
+.wbox:not(.rdy) #wImg{opacity:.35}
+.wbt{display:flex;gap:8px;margin:4px 0 0}
+.wbt button{flex:1;height:50px;border-radius:14px;font-weight:900;font-size:15.5px}
+.wb1{background:#4a1b1d;color:#f3e3c2}
+.wb2{background:#efe3d1;color:#4a1b1d;border:1px solid #d9c3a3}
+.wnote{font-size:12.5px;color:var(--muted);margin:8px 0 12px}
+/* 2026-11-26: الكارت هو الأساس بشاشة التثبيت */
+.wcv{position:relative;max-height:430px;overflow:hidden;border-radius:12px;box-shadow:0 8px 22px rgba(40,25,10,.18)}
+.wcv.full{max-height:none}
+.wmore{position:absolute;left:0;right:0;bottom:0;height:86px;padding-top:34px;background:linear-gradient(rgba(249,243,237,0),#fff 62%);color:#4a1b1d;font-weight:900;font-size:15px}
+.wcv.full .wmore{display:none}
+.wbox .wa{margin-top:12px}
+.wbox .wa p{font-size:14px;margin-top:0}
+.wbox .wab{font-size:15.5px}
+.wbox .wbt{margin-top:12px}

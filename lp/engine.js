@@ -316,16 +316,119 @@ function beacon(){if(TEST)return;crm(payload(ORDER));try{SENT=true;BEACONED=true
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&BEACONED&&ORDER&&!ORDER.shown){clearTimeout(AUTO);clearInterval(LDI);var o=ORDER;track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}),content_type:"product",value:o.total,currency:"IQD",num_items:o.items.length},{eventID:o.ref});done()}});
 function done(){ORDER.shown=true;var tot=ORDER.total+SHIP+(ORDER.hair?HAIR.price:0);
   $("#upSheet").innerHTML='<div class="done"><div class="ok" style="justify-content:center"><i>✓</i>طلبك تثبّت</div><h3>شكراً '+esc(ORDER.name.split(" ")[0])+' 🤍</h3><p class="lead">راح نتصل بيك على <span class="n" dir="ltr">'+ORDER.phone+'</span> نأكد العنوان. المجموع عند الاستلام <b class="n" style="color:var(--br)">'+money(tot)+'</b> د.ع، وتجرّب التستر قبل لا تدفع.</p>'+
-   '<div class="wa"><b>تم تثبيت طلبك ✓</b><p>راسلنا على الواتساب حتى تنحفظ معلوماتك عندنا، وتكدر تستفاد من الضمان الذهبي لمدة 7 أيام على أي مشكلة بطلبك.</p><a class="wab" id="waGo" target="_blank" rel="noopener" href="'+waLink()+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.5 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.7-.2 1.3z"/></svg>أكّد طلبك بالواتساب</a></div>'+
+   '<div class="wbox" id="wBox"><div class="wh"><b>🛡️ هذا كارت ضمانك</b><span>رقم الضمان <b class="n" dir="ltr">'+wSerial(ORDER)+'</b></span></div>'+
+   '<div class="wcv" id="wCv"><img id="wImg" alt=""><button class="wmore" id="wMore">شوف الكارت كامل ⌄</button></div>'+
+   '<div class="wa"><p>راسلنا على الواتساب حتى نحفظ رقمك يمنا، وتكدر تستفاد من الضمان بأي وقت تحتاجه.</p><a class="wab" id="waGo" target="_blank" rel="noopener" href="'+waLink()+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.5 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.7-.2 1.3z"/></svg>ارسل كارت الضمان مالتك على الواتساب</a></div>'+
+   '<div class="wbt"><button class="wb1" id="wPdf">⬇ تحميل الكارت PDF</button><button class="wb2" id="wPng">حفظ كصورة</button></div><p class="wnote">إذا ما نزل، افتح الكارت كامل ودوس عليه مطوّل واحفظه.</p></div>'+
    '<button class="skip" id="closeUp">تمام</button></div>';
-  $("#waGo").addEventListener("click",function(){track("Contact",{content_name:"wa_confirm"})});
+  $("#waGo").addEventListener("click",function(){track("Contact",{content_name:"wa_warranty"})});
+  $("#wMore").addEventListener("click",function(){$("#wCv").classList.add("full")});
   $("#closeUp").addEventListener("click",function(){$("#up").classList.remove("open");document.body.style.overflow=""});
   $("#sub").disabled=true;$("#sub").textContent="تم تثبيت طلبك ✓";
+  wMount();
 }
+/* ===== 2026-11-26 (محمد): كارت «ضمان التجربة» يطلع بعد تثبيت الطلب — بيه معلومات الطلب + رقم ضمان تسلسلي، ينحفظ PDF أو صورة ===== */
+function wTs(o){var t=parseInt(String(o.ref||"").split("-").pop(),36);return t>1e12&&t<4e12?t:Date.now()}
+function wDate(t){var d=new Date(t);return d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate()}
+function wSerial(o){var s=String(o.ref||""),h=5381,A="23456789ABCDEFGHJKLMNPQRSTUVWXYZ",c="",d=new Date(wTs(o));for(var i=0;i<s.length;i++)h=(((h<<5)+h)^s.charCodeAt(i))>>>0;
+  for(var j=0;j<5;j++){c+=A[h%32];h=Math.floor(h/32)}
+  return "AJW-"+String(d.getFullYear()).slice(2)+("0"+(d.getMonth()+1)).slice(-2)+("0"+d.getDate()).slice(-2)+"-"+c}
+function wCard(o,cb){
+  var W=1080,P=40,IW=W-2*P,BR="#4a1b1d",GD="#c9a66b",IV="#f6efe5",INK="#3b2a1e",MU="#8a7461";
+  var tot=o.total+SHIP+(o.hair?HAIR.price:0),sn=wSerial(o);
+  var c=document.createElement("canvas"),x=c.getContext("2d");
+  function f(w,s,m){return w+" "+s+"px "+(m?"M":"F")+",sans-serif"}
+  function wrap(t,font,max){x.font=font;var ws=String(t).split(" "),L=[],cur="";ws.forEach(function(w){var n=cur?cur+" "+w:w;if(x.measureText(n).width>max&&cur){L.push(cur);cur=w}else cur=n});if(cur)L.push(cur);return L}
+  function T(t,X,Y,font,col,al,dir){x.font=font;x.fillStyle=col;x.textAlign=al||"right";x.direction=dir||"rtl";x.fillText(t,X,Y)}
+  function rr(X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath()}
+  function gold(y0,y1){var g=x.createLinearGradient(0,y0,0,y1);g.addColorStop(0,"#f6e1b0");g.addColorStop(.55,"#d6b273");g.addColorStop(1,"#a77b3f");return g}
+  var prodF=f(700,30),prodL=wrap(orderProd(o,1),prodF,560);
+  var rows=[["رقم الطلب",o.ref||"—",1],["تاريخ الشراء",wDate(wTs(o)),1],["ينتهي الضمان","بعد 7 أيام من يوم الاستلام"],["الاسم",o.name],["رقم الهاتف",o.phone,1]];
+  var R1=560,B1=R1+260+rows.length*64+prodL.length*44+30+80,T0=B1+30;
+  var H=T0+300+30+120+30+150+30+170+110;H+=H%2;c.width=W;c.height=H;
+  // خلفية
+  x.fillStyle="#1c0d0c";x.fillRect(0,0,W,H);
+  // ===== اللوحة العنابية
+  var g=x.createLinearGradient(0,P,0,P+480);g.addColorStop(0,"#5c2427");g.addColorStop(1,"#2e1112");rr(P,P,IW,480,34);x.fillStyle=g;x.fill();x.strokeStyle="rgba(201,166,107,.35)";x.lineWidth=2;x.stroke();
+  // قوس الـ7 يمين
+  var ax=P+IW-230,ay=P+50;x.beginPath();x.moveTo(ax,ay+380);x.lineTo(ax,ay+95);x.arc(ax+95,ay+95,95,Math.PI,0);x.lineTo(ax+190,ay+380);x.closePath();x.fillStyle="rgba(0,0,0,.18)";x.fill();x.strokeStyle="rgba(201,166,107,.45)";x.stroke();
+  T("7",ax+95,ay+255,f(700,230,1),gold(ay+80,ay+255),"center","ltr");
+  T("أيام",ax+95,ay+318,f(900,46),"#f1dcae","center");T("بعد الاستلام",ax+95,ay+360,f(500,26),"#e6cfa0","center");
+  var cx=P+(IW-250)/2+10;
+  if(wCard.logo&&wCard.logo.complete&&wCard.logo.naturalWidth)x.drawImage(wCard.logo,cx-58,P+34,116,103);
+  T("ضمان التجربة",cx,P+262,f(900,96),gold(P+180,P+262),"center");
+  T("E X P E R I E N C E   G U A R A N T E E",cx,P+318,f(600,19,1),"#d9bf8c","center","ltr");
+  T("اختر عطرك بثقة، ولك 7 أيام بعد الاستلام",cx,P+400,f(500,30),"#f3e3c2","center");
+  x.strokeStyle="rgba(201,166,107,.6)";x.lineWidth=2;x.beginPath();x.moveTo(cx-330,P+390);x.lineTo(cx-290,P+390);x.moveTo(cx+290,P+390);x.lineTo(cx+330,P+390);x.stroke();
+  // ===== لوحة بيانات الطلب
+  rr(P,R1,IW,B1-R1,34);x.fillStyle=IV;x.fill();
+  T("بيانات ضمانك",P+IW-40,R1+62,f(900,36),BR);T("احتفظ بهذا الكارت",P+40,R1+60,f(500,24),MU,"left");
+  rr(P+40,R1+90,IW-80,130,22);x.fillStyle="#efe3d1";x.fill();x.setLineDash([10,8]);x.strokeStyle=GD;x.lineWidth=2.5;x.stroke();x.setLineDash([]);
+  T("رقم الضمان",W/2,R1+132,f(700,24),MU,"center");T(sn,W/2,R1+192,f(700,52,1),BR,"center","ltr");
+  var y=R1+260,LX=P+IW-50,VX=P+50;
+  function line(){x.strokeStyle="rgba(96,72,50,.14)";x.lineWidth=1.5;x.beginPath();x.moveTo(P+40,y);x.lineTo(P+IW-40,y);x.stroke()}
+  rows.forEach(function(r){T(r[0],LX,y+42,f(500,27),MU);T(r[1],VX,y+42,r[2]?f(700,30,1):f(700,30),INK,"left",r[2]?"ltr":"rtl");y+=64;line()});
+  T("المنتجات",LX,y+42,f(500,27),MU);prodL.forEach(function(l,i){T(l,VX,y+42+i*44,prodF,INK,"left")});y+=prodL.length*44+30;line();
+  T("المجموع عند الاستلام",LX,y+46,f(700,28),BR);T(money(tot)+" د.ع",VX,y+48,f(700,34,1),BR,"left");
+  // ===== الشروط
+  var y0=T0;rr(P,y0,IW,H-y0-P-60,34);x.fillStyle=IV;x.fill();
+  var cols=[["مدة الضمان","7 أيام","تبدأ من تاريخ الاستلام","cal"],["حالة العبوة","مقبول حتى بعد فتح العطر","بشرط ما يتجاوز الاستخدام 20%","btl"],["خياراتك","استبدال بعطر آخر","أو استرجاع المبلغ","cyc"]],cw=IW/3;
+  cols.forEach(function(k,i){var X=P+IW-cw*i-cw/2;ico(k[3],X,y0+70);T(k[0],X,y0+150,f(900,32),BR,"center");T(k[1],X,y0+198,f(700,26),INK,"center");T(k[2],X,y0+238,f(500,23),MU,"center");
+    if(i){x.strokeStyle="rgba(96,72,50,.25)";x.lineWidth=2;x.beginPath();x.moveTo(P+IW-cw*i,y0+50);x.lineTo(P+IW-cw*i,y0+250);x.stroke()}});
+  function ico(k,X,Y){x.strokeStyle=BR;x.lineWidth=3.2;x.lineCap="round";x.beginPath();
+    if(k==="cal"){rr(X-26,Y-24,52,48,7);x.stroke();x.beginPath();x.moveTo(X-26,Y-10);x.lineTo(X+26,Y-10);x.moveTo(X-13,Y-32);x.lineTo(X-13,Y-18);x.moveTo(X+13,Y-32);x.lineTo(X+13,Y-18);x.stroke();x.fillStyle=BR;[-12,0,12].forEach(function(a){[3,14].forEach(function(b){x.fillRect(X+a-3,Y+b-3,6,6)})})}
+    else if(k==="btl"){rr(X-22,Y-14,44,46,8);x.stroke();x.beginPath();x.rect(X-9,Y-28,18,14);x.stroke();x.beginPath();x.rect(X-13,Y-36,26,8);x.stroke()}
+    else{x.arc(X,Y,26,-2.6,.2);x.stroke();x.beginPath();x.arc(X,Y,26,.55,3.35);x.stroke();x.beginPath();x.moveTo(X+26,Y+5);x.lineTo(X+18,Y-6);x.moveTo(X+26,Y+5);x.lineTo(X+33,Y-6);x.moveTo(X-26,Y-5);x.lineTo(X-33,Y+6);x.moveTo(X-26,Y-5);x.lineTo(X-18,Y+6);x.stroke()}}
+  // مكان الإجراء
+  var y2=y0+300;rr(P+30,y2,IW-60,120,22);x.fillStyle="#ebdfcc";x.fill();rr(P+IW-30-250,y2,250,120,22);x.fillStyle=BR;x.fill();
+  T("مكان الإجراء",P+IW-30-125,y2+72,f(900,32),"#f3e3c2","center");
+  T("أونلاين أو بأي فرع للجسمي،",P+30+(IW-310)/2,y2+52,f(700,28),INK,"center");T("مهما كان مكان الشراء.",P+30+(IW-310)/2,y2+92,f(700,28),INK,"center");
+  // طريقة الاستخدام
+  var y3=y2+150;rr(P+30,y3,IW-60,150,22);x.fillStyle="#ebdfcc";x.fill();rr(P+IW-30-250,y3,250,150,22);x.fillStyle=BR;x.fill();
+  T("طريقة استخدام",P+IW-30-125,y3+66,f(900,30),"#f3e3c2","center");T("الضمان",P+IW-30-125,y3+106,f(900,30),"#f3e3c2","center");
+  var st=[["تواصل معنا","أو زور أقرب فرع"],["قدّم هذا الكارت","مع ذكر رقم الضمان"],["اختر الاستبدال","أو الاسترجاع"]],sw=(IW-310)/3;
+  st.forEach(function(s,i){var X=P+IW-30-250-sw*i-sw/2;x.beginPath();x.arc(X+sw/2-34,y3+58,19,0,7);x.fillStyle=BR;x.fill();T(String(i+1),X+sw/2-34,y3+67,f(700,22,1),"#f3e3c2","center","ltr");
+    T(s[0],X+sw/2-62,y3+68,f(700,24),INK,"right");T(s[1],X+sw/2-62,y3+106,f(500,22),MU,"right")});
+  // لطلبات الأونلاين
+  var y4=y3+180;rr(P+30,y4,IW-60,170,22);x.strokeStyle="rgba(96,72,50,.22)";x.lineWidth=2;x.stroke();
+  T("لطلبات الأونلاين",P+IW-60,y4+48,f(900,30),BR);
+  T("جرّب التيستر أولاً أمام المندوب، وخلي العبوة الأصلية مغلقة إلى أن تتأكد.",P+IW-60,y4+92,f(500,24),INK);
+  wrap("أجور التوصيل الخاصة بالاستبدال أو الاسترجاع بالمرة الأولى على الشركة، وبعدها على العميل.",f(500,24),IW-120).forEach(function(l,i){T(l,P+IW-60,y4+130+i*34,f(500,24),INK)});
+  // تذييل
+  T("دار الجسمي للعطور · aljassmi.store",W/2,H-P-10,f(500,24),"#cdb185","center");
+  cb(c,sn)}
+function wPdf(c){var w=c.width/2,h=c.height/2,b=atob(c.toDataURL("image/jpeg",.9).split(",")[1]),im=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)im[i]=b.charCodeAt(i);
+  var parts=[],off=[],len=0,cs="q "+w+" 0 0 "+h+" 0 0 cm /Im0 Do Q";
+  function add(s){if(typeof s==="string"){var u=new Uint8Array(s.length);for(var k=0;k<s.length;k++)u[k]=s.charCodeAt(k)&255;s=u}parts.push(s);len+=s.length}
+  add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+  off[1]=len;add("1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n");
+  off[2]=len;add("2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n");
+  off[3]=len;add("3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 "+w+" "+h+"]/Resources<</XObject<</Im0 4 0 R>>>>/Contents 5 0 R>>endobj\n");
+  off[4]=len;add("4 0 obj<</Type/XObject/Subtype/Image/Width "+c.width+"/Height "+c.height+"/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length "+im.length+">>stream\n");add(im);add("\nendstream\nendobj\n");
+  off[5]=len;add("5 0 obj<</Length "+cs.length+">>stream\n"+cs+"\nendstream\nendobj\n");
+  var xr=len,s="xref\n0 6\n0000000000 65535 f \n";for(i=1;i<6;i++)s+=("000000000"+off[i]).slice(-10)+" 00000 n \n";
+  add(s+"trailer<</Size 6/Root 1 0 R>>\nstartxref\n"+xr+"\n%%EOF");return new Blob(parts,{type:"application/pdf"})}
+function wSave(blob,name){var file;try{file=new File([blob],name,{type:blob.type})}catch(e){}
+  if(file&&/iPhone|iPad|iPod/.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(function(){});return}
+  var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},5000)}
+/* 2026-11-26 (محمد): صورة الكارت تروح لقناة الطلبات ويا الطلب (رد على رسالة الطلب). بالتجربة ما تنرسل */
+function wSend(c,sn){var o=ORDER;if(!o||o.wsent)return;o.wsent=1;var img;try{img=c.toDataURL("image/jpeg",.82).split(",")[1]}catch(e){return}
+  var p={kind:"wcard",page:LP.slug,ref:o.ref||"",sn:sn,name:o.name,phone:o.phone,reply:o.tgid||0,img:img};
+  if(TEST){try{console.log("[TEST] كارت الضمان ما انرسل للتلكرام",sn,Math.round(img.length/1024)+"KB")}catch(e){}return}
+  var go=function(n){fetch(RELAY,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(p),redirect:"follow"}).then(function(r){return r.json()}).then(function(j){if(!j.ok&&j.error==="busy"&&n<2)setTimeout(function(){go(n+1)},4000)}).catch(function(){if(n<1)setTimeout(function(){go(n+1)},3000)})};
+  setTimeout(function(){go(0)},o.tgid?0:2500)}
+function wMount(){var box=$("#wBox");if(!box)return;
+  if(!wCard.logo){wCard.logo=new Image();wCard.logo.src="../lp/logo-light.png"}
+  var fl=document.fonts&&document.fonts.load?Promise.all(["900 40px F","700 40px F","500 40px F","700 40px M","600 20px M"].map(function(s){return document.fonts.load(s)})):Promise.resolve();
+  var lg=new Promise(function(r){if(wCard.logo.complete)r();else{wCard.logo.onload=wCard.logo.onerror=r}});
+  Promise.all([fl,lg]).catch(function(){}).then(function(){wCard(ORDER,function(c,sn){
+    $("#wImg").src=c.toDataURL("image/png");$("#wImg").alt="كارت ضمان التجربة رقم "+sn;box.classList.add("rdy");wSend(c,sn);
+    $("#wPdf").onclick=function(){wSave(wPdf(c),"ضمان-الجسمي-"+sn+".pdf");track("WarrantyCard",{f:"pdf"})};
+    $("#wPng").onclick=function(){c.toBlob(function(b){wSave(b,"ضمان-الجسمي-"+sn+".png")},"image/png");track("WarrantyCard",{f:"png"})}})})}
 
 /* ===== الربط: وسيط Apps Script → قناة «طلبات الجسمي» + شيت ===== */
 // 2026-11-25 (محمد): رسالة الواتساب بيها تفاصيل الطلب مختصرة (مو بس رقم الطلب) — مقفلة لكل صفحات الهبوط
-function waLink(){var o=ORDER||{},L=["هلا، هذا تأكيد طلبي من صفحة "+LP.name+" ✅","رقم الطلب: "+(o.ref||""),"الاسم: "+(o.name||"")];
+function waLink(){var o=ORDER||{},L=["هلا، هذا كارت ضماني وتأكيد طلبي من صفحة "+LP.name+" ✅","🛡️ رقم الضمان: "+wSerial(o),"رقم الطلب: "+(o.ref||""),"الاسم: "+(o.name||"")];
   if(o.items){var all=o.total+(o.hair?HAIR.price:0);
     L.push("الطلب: "+orderProd(o,1),"المجموع عند الاستلام: "+money(all+SHIP)+" د.ع (ويه التوصيل)","العنوان: "+o.governorate+" - "+o.address)}
   return "https://wa.me/"+WA+"?text="+encodeURIComponent(L.join("\n"))}
@@ -352,13 +455,13 @@ function orderText(o){
     "المنتج : "+prod,
     "السعر : "+alf(all)+(rzDisc>0?" (بعد خصم "+alf(rzDisc)+")":"")+" والتوصيل "+alf(SHIP),
     "——","ملاحظة : تجربة العطر من خلال التيستر فقط والتأكد من سلامة الطلب"+adRef(),prod,
-    "","━━━━━━━━━━━━","للفريق بس (لا ينسخ):","المجموع عند الاستلام: "+money(all+SHIP)+" د.ع · "+unitName(q),"المصدر: صفحة "+LP.name,srcLine()].concat(o.phOk?[]:["⚠️ الزبون ما أكد رقمه (طلع قبل التأكيد): تأكدوا من الرقم"]));
+    "","━━━━━━━━━━━━","للفريق بس (لا ينسخ):","المجموع عند الاستلام: "+money(all+SHIP)+" د.ع · "+unitName(q),"المصدر: صفحة "+LP.name,"🛡️ رقم الضمان: "+wSerial(o),srcLine()].concat(o.phOk?[]:["⚠️ الزبون ما أكد رقمه (طلع قبل التأكيد): تأكدوا من الرقم"]));
   return L.join("\n");
 }
 function capiData(v,ids,n){function ck(k){var m=document.cookie.match(new RegExp("(?:^|; )"+k+"=([^;]*)"));return m?decodeURIComponent(m[1]):""}var fbc=ck("_fbc");if(!fbc&&SRC.fbclid)fbc="fb.1."+Date.now()+"."+SRC.fbclid;return {fbp:ck("_fbp"),fbc:fbc,ua:navigator.userAgent.slice(0,400),url:location.href.split("#")[0].slice(0,500),value:v,currency:"IQD",ids:ids,n:n}}
 function payload(o){if(!o.ref)o.ref=LP.code+"-"+Date.now().toString(36).toUpperCase();
   return {kind:"order",page:LP.slug,ref:o.ref,name:o.name,phone:o.phone,phone2:o.phone2||"",governorate:o.governorate,summary:(LP.bundle?[LP.bundle.rz+(o.q>1?" × "+o.q:"")].concat(o.items.slice(BASE.length*o.q).map(function(s){return CAT[s].name})):o.items.map(function(s){return CAT[s].name})).join(" + ")+(o.hair?" + "+hairName(o.hair):""),text:"#طلب_جديد "+o.ref+"\n"+orderText(o),capi:capiData(o.total+(o.hair?HAIR.price:0),o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),o.items.length)}}
-function placeOrder(o){return relay(payload(o)).then(function(){track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),content_type:"product",value:o.total+(o.hair?HAIR.price:0),currency:"IQD",num_items:o.items.length},{eventID:o.ref})})}
+function placeOrder(o){return relay(payload(o)).then(function(j){o.tgid=j&&j.id||0;track("Purchase",{content_ids:o.items.map(function(s){return CAT[s].pid}).concat(o.hair?["hair-"+o.hair]:[]),content_type:"product",value:o.total+(o.hair?HAIR.price:0),currency:"IQD",num_items:o.items.length},{eventID:o.ref})})}
 // مطابقة متقدمة: نعطي البكسل رقم الزبون واسمه ومحافظته لحظة «ثبّت»، والبكسل يشفّرهن بنفسه (SHA-256) قبل ما يطلعن
 var GOV_EN={"بغداد":"baghdad","البصرة":"basra","نينوى":"nineveh","أربيل":"erbil","النجف":"najaf","كربلاء":"karbala","بابل":"babil","ذي قار":"dhiqar","الأنبار":"anbar","ديالى":"diyala","صلاح الدين":"salahaddin","كركوك":"kirkuk","واسط":"wasit","ميسان":"maysan","الديوانية":"diwaniyah","المثنى":"muthanna","السليمانية":"sulaymaniyah","دهوك":"duhok","حلبجة":"halabja"};
 function matchUser(o){try{if(!window.fbq||typeof AJ_PIXEL==="undefined"||TEST)return;var n=o.name.toLowerCase().split(/\s+/).filter(Boolean),u={ph:"964"+o.phone.slice(1),country:"iq"};if(n[0])u.fn=n[0];if(n.length>1)u.ln=n[n.length-1];if(GOV_EN[o.governorate])u.ct=GOV_EN[o.governorate];fbq("init",AJ_PIXEL,u)}catch(e){}}
@@ -395,5 +498,7 @@ function vcOnce(){if(window.__vc)return;window.__vc=1;track("ViewContent",{conte
 if(inOrder)vcOnce();
 if(TEST)(function(){function a(){var b=document.createElement("div");b.className="testpill";b.textContent="وضع تجربة: ما ينرسل طلب";document.body.appendChild(b)}document.body?a():document.addEventListener("DOMContentLoaded",a)})();
 // وضع التجربة فقط: ?test=1&step=up يفتح خطوة تأكيد الرقم مباشرة (للمعاينة على التلفون)
+// وضع التجربة فقط: ?test=1&step=done يفتح شاشة «تم التثبيت» مع كارت الضمان (ما يدز شي)
+if(TEST&&/[?&]step=done(&|$)/.test(location.search)){ORDER={name:"محمد حيدر",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total(),ref:LP.code+"-"+Date.now().toString(36).toUpperCase()};SENT=null;$("#up").classList.add("open");document.body.style.overflow="hidden";done()}
 if(TEST&&/[?&]step=up(&|$)/.test(location.search)){ORDER={name:"تجربة",phone:"07701234567",phone2:"",governorate:"بغداد",address:"تجربة",items:items(),q:qty(),sel:SEL,extra:EXTRA.slice(),sum:sum(),disc:disc(),total:total()};SENT=null;showCheck()}
 })();
