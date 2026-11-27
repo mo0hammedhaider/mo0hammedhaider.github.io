@@ -35,7 +35,7 @@ var svg='<svg class="pyr-svg" id="pySvg" viewBox="0 0 320 290" role="img" aria-l
 X.box='<section class="fx-pyr" id="box"><div class="wrap head reveal"><div class="kick">'+esc(P.k)+'</div><h2 class="h2">'+esc(P.h)+'</h2><p class="lead">'+esc(P.lead)+'</p></div>'+
   '<div class="pyr-sc'+(P.vid?' vid':'')+'" id="pySc"><div class="pyr-st" id="pySt"><div class="pyr-stage'+(P.vid?' vid':'')+'">'+(P.vid?'<video id="pyVid" muted playsinline preload="none" disablepictureinpicture aria-hidden="true" poster="'+P.vid+'.jpg?v='+(P.vidV||'')+'" data-src="'+P.vid+'.mp4?v='+(P.vidV||'')+'"></video>':'<canvas id="pyCv" aria-hidden="true"></canvas>'+svg)+'</div>'+
   '<div class="pyr-card" id="pyCard" aria-live="polite"></div><div class="pyr-hint" aria-hidden="true">نزّل لتحت<i></i></div></div></div>'+
-  '<div class="wrap"><figure class="pyr-q reveal"><div class="st">'+"★★★★★".slice(0,P.quote[1]||5)+((P.quote[1]||5)<5?'<em>'+"★★★★★".slice(0,5-P.quote[1])+'</em>':'')+'</div><p>«'+esc(P.quote[0])+'»</p><figcaption>زبون من موقع الدار</figcaption></figure>'+
+  '<div class="wrap"><div class="fx-pq reveal"><div class="fx-qh"><b>'+esc(P.qK||"آراء عملائنا")+'</b><span>'+esc(P.qH||"")+'</span></div>'+qcar(P.quotes,"qcP")+'</div>'+
   radar()+'<div class="fx-words reveal">'+P.words.map(function(w,i){return(i?'<i>·</i>':'')+'<span style="animation-delay:'+(i*.35)+'s">'+esc(w)+'</span>'}).join("")+'</div></div>'+
   vsec(D.vnotes,"fx-vn")+'</section>'+
   (D.unbox?'<section class="sec fx-unbox" id="unbox">'+vsec(D.unbox,"")+
@@ -48,6 +48,23 @@ function reel(r){return'<div class="reel"><video muted loop playsinline preload=
 function vsec(V,cls){if(!V)return"";return'<div class="vsec '+cls+'"><div class="wrap reveal"><div class="kick">'+esc(V.k)+'</div><h2 class="h2">'+esc(V.h)+'</h2>'+
   (V.lead?'<p class="lead">'+esc(V.lead)+'</p>':"")+'</div><div class="rail'+(V.items.length<3?' two':'')+'">'+V.items.map(reel).join("")+'</div>'+
   '<p class="hint">اضغط على الفيديو حتى تسمع الصوت</p></div>'}
+
+/* 2026-11-27 (محمد): كاروسيل آراء — ينسحب باليد ويمشي وحده (يوكف وكت تلمسه، وما يمشي إذا مو بالشاشة) */
+function qcar(Q,id){if(!Q||!Q.length)return"";return'<div class="fx-qc" id="'+id+'"><div class="fx-qr">'+Q.map(function(q,i){return'<figure class="fx-q'+(i?'':' on')+'"><div class="st">★★★★★</div><p>«'+esc(q)+'»</p><figcaption>'+esc(LP.qWho||"زبون من موقع الدار")+'</figcaption></figure>'}).join("")+
+  '</div><div class="fx-qd">'+Q.map(function(_,i){return'<button type="button" aria-label="الرأي '+(i+1)+'"'+(i?'':' class="on"')+'><b></b></button>'}).join("")+'</div></div>'}
+function car(root){if(!root)return;var r=root.querySelector(".fx-qr"),cs=r.children,ds=root.querySelectorAll(".fx-qd button"),cur=0,T=4200,hold=0,vis=0,tm=0,rt=0,st=0;
+  function act(){var m=r.getBoundingClientRect(),mid=m.left+m.width/2,b=0,bd=1e9;for(var i=0;i<cs.length;i++){var c=cs[i].getBoundingClientRect(),d=Math.abs(c.left+c.width/2-mid);if(d<bd){bd=d;b=i}}return b}
+  function mark(i){cur=i;for(var j=0;j<cs.length;j++){cs[j].classList.toggle("on",j===i);ds[j].classList.toggle("on",j===i)}}
+  function go(i){var c=cs[i].getBoundingClientRect(),m=r.getBoundingClientRect();r.scrollBy({left:c.left+c.width/2-(m.left+m.width/2),behavior:RM?"auto":"smooth"})}
+  function arm(){clearTimeout(tm);root.classList.remove("run");if(RM||hold||!vis||document.hidden)return;void root.offsetWidth;root.classList.add("run");tm=setTimeout(function(){go((cur+1)%cs.length)},T)}
+  r.addEventListener("scroll",function(){clearTimeout(st);st=setTimeout(function(){mark(act());arm()},140)},{passive:true});
+  function down(){hold=1;clearTimeout(rt);clearTimeout(tm);root.classList.remove("run")}
+  function up(){clearTimeout(rt);rt=setTimeout(function(){hold=0;arm()},2600)}
+  ["touchstart","mousedown"].forEach(function(e){r.addEventListener(e,down,{passive:true})});
+  ["touchend","touchcancel","mouseup"].forEach(function(e){r.addEventListener(e,up,{passive:true})});
+  ds.forEach(function(d,j){d.addEventListener("click",function(){down();go(j);up()})});
+  document.addEventListener("visibilitychange",arm);
+  if("IntersectionObserver"in window)new IntersectionObserver(function(e){vis=e[0].isIntersecting;arm()},{threshold:.5}).observe(root);else{vis=1;arm()}}
 
 function radar(){var R=88,n=P.radar.length;
   function pt(i,r){var a=-Math.PI/2+2*Math.PI*i/n;return[(r*Math.cos(a)).toFixed(1),(r*Math.sin(a)).toFixed(1)]}
@@ -64,7 +81,7 @@ function radar(){var R=88,n=P.radar.length;
 var U=D.duo,GL=D.gal;
 X.more=['<section class="sec fx-duo" id="duo"><div class="wrap"><div class="reveal"><div class="kick">'+esc(U.k)+'</div><h2 class="h2">'+esc(U.h)+'</h2><p class="lead">'+esc(U.lead)+'</p></div>'+
   '<div class="duo-img reveal"><img loading="lazy" src="'+U.img+'" alt="فيرونتي إله وإلها"><span class="duo-tag">VERONTI · UNISEX</span></div>'+
-  '<div class="duo-2">'+[U.he,U.she].map(function(c,i){return'<div class="duo-c reveal"><i class="'+(i?"she":"he")+'"></i><b>'+esc(c[0])+'</b><p>'+esc(c[1])+'</p></div>'}).join("")+'</div>'+
+  (U.vid?'<div class="rail one fx-duov">'+reel(U.vid)+'</div>':'')+'<div class="duo-2">'+[U.he,U.she].map(function(c,i){return'<div class="duo-c reveal"><i class="'+(i?"she":"he")+'"></i><b>'+esc(c[0])+'</b><p>'+esc(c[1])+'</p></div>'}).join("")+'</div>'+
   U.q.map(function(q){return'<figure class="duo-q reveal"><div class="st">★★★★★</div><p>«'+esc(q[0])+'»</p><figcaption>'+esc(q[1])+'</figcaption></figure>'}).join("")+
   '<button class="cta duo-cta" type="button" data-pick="1">'+esc(U.cta)+'<small><span class="n">'+fmt(U.ctaP)+'</span> د.ع</small></button></div></section>',
   '<section class="sec fx-gal" id="gal"><div class="wrap reveal"><div class="kick">'+esc(GL.k)+'</div><h2 class="h2">'+esc(GL.h)+'</h2></div>'+
@@ -84,6 +101,16 @@ X.init=function(api){var $=api.$,$$=api.$$;
     if(rail){var lw=document.createElement("div");lw.className="wrap fx-dmk";lw.innerHTML='<div class="fx-igk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>رسائل وصلتنا بعد الاستلام</div>';if(ld){ld.innerHTML='اسحب وشوف <b class="n">'+rv.querySelectorAll(".shots .shot").length+'</b> رسائل مثل ما وصلتنا ←';lw.appendChild(ld)}rail.parentNode.insertBefore(lw,rail)}
     var mb=$("#moreIG");if(mb)mb.addEventListener("click",function(){w.querySelectorAll(".fx-igc[hidden]").forEach(function(e){e.hidden=false});this.remove()});
   }
+  // 2026-11-27 (محمد): الرسائل المكتوبة صارت كاروسيل يمشي وحده بأول قسم الآراء، وزر «جرّبه» بآخره
+  if(rv){var qs=$("#quotes"),hw2=rv.querySelector(".wrap");
+    if(qs&&D.revQ&&hw2){var qw=document.createElement("div");qw.className="wrap fx-rq";qw.innerHTML=qcar(D.revQ,"qcR");hw2.parentNode.insertBefore(qw,hw2.nextSibling);qs.remove();var mq=$("#moreQ");if(mq)mq.remove()}
+    if(D.revCta){var lw2=rv.lastElementChild,cb=document.createElement("button");cb.type="button";cb.className="cta fx-revcta";cb.innerHTML=esc(D.revCta[0])+'<small>'+esc(D.revCta[1])+'</small>';
+      cb.addEventListener("click",function(){api.goOrder&&api.goOrder()});lw2.insertBefore(cb,lw2.querySelector(".disc"))}}
+  car($("#qcR"));car($("#qcP"));
+  // 2026-11-27: شلون يمشي الطلب (3 خطوات) بقسم الضمان قبل الطلب، وسطر التوصيل جوه الفورم قبل الزر
+  var pfx=$("#proof .gbox");if(pfx&&D.steps){var sx=document.createElement("div");sx.className="fx-steps";
+    sx.innerHTML='<h3>'+esc(D.steps.h)+'</h3><ol>'+D.steps.list.map(function(x,i){return'<li><i class="n">'+(i+1)+'</i><div><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></div></li>'}).join("")+'</ol>';pfx.parentNode.insertBefore(sx,pfx)}
+  var osm=$("#osum");if(osm&&D.eta){var et=document.createElement("div");et.className="fx-eta";et.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7zM7 18.5a1.5 1.5 0 1 0 0-.01M17 18.5a1.5 1.5 0 1 0 0-.01"/></svg><span>'+D.eta+'</span>';osm.parentNode.insertBefore(et,osm)}
   // count-up
   var st=$("#fxStats");
   if(st){var done=0,run=function(){if(done)return;done=1;$$("#fxStats [data-to]").forEach(function(el){var to=+el.dataset.to,d=+el.dataset.d,t0=performance.now(),T=1500;
@@ -161,10 +188,12 @@ X.init=function(api){var $=api.$,$$=api.$$;
 
   // 2026-11-24 ترتيب: الضمان والتيستر (proof) قبل الطلب، وفيديوهات المكونات بعد الطلب
   var od=$("#order"),pf=$("#proof"),vn=$(".fx-vn");
-  if(od&&pf)od.parentNode.insertBefore(pf,od);
-  // 2026-11-24 (محمد): الآراء الحقيقية تصعد فوك الضمان والفورم ← آراء · ضمان · طلب
-  var rvs=$("#rev");if(od&&rvs)od.parentNode.insertBefore(rvs,pf&&pf.parentNode===od.parentNode?pf:od);
-  if(od&&vn){var vs=document.createElement("section");vs.className="sec fx-vnw";vs.appendChild(vn);od.parentNode.insertBefore(vs,od.nextSibling)}
+    if(od&&pf)od.parentNode.insertBefore(pf,od);
+  // 2026-11-25 (محمد): بعد السلم السعري ← الفيديوات ← الآراء المكتوبة ← باقي المسار (بدل «آراء · ضمان · طلب» مال 11-24)
+  // 2026-11-27 (محمد): الآراء والتعليقات تصعد جوه «+579,000 طلب» مباشرة، قبل الهرم العطري
+  var hro=$(".hero");if(hro&&rv)hro.parentNode.insertBefore(rv,hro.nextSibling);
+  var lst=od;if(od)["#reels"].forEach(function(k){var x=$(k);if(x){od.parentNode.insertBefore(x,lst.nextSibling);lst=x}});
+  if(od&&vn){var vs=document.createElement("section");vs.className="sec fx-vnw";vs.appendChild(vn);od.parentNode.insertBefore(vs,lst.nextSibling)}
   // نقاط الياء الأخيرة بالاسم (fer.css .nm)
   var h1=$(".hero h1");if(h1&&/ي$/.test(h1.textContent.trim()))h1.innerHTML='<span class="nm">'+h1.innerHTML+'</span>';
   // رمشة الفهد: جفنين ينزلون ويصعدون فوك العيون (fer.css .lid)، كل 3–6 ثواني ومرات رمشتين
