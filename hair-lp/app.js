@@ -187,11 +187,13 @@ function pend(){try{return JSON.parse(localStorage.getItem(PK)||"[]")}catch(e){r
 function savePend(L){try{localStorage.setItem(PK,JSON.stringify(L.slice(-5)))}catch(e){}}
 function addPend(o){var L=pend().filter(function(x){return x.order_id!==o.order_id});L.push(o);savePend(L)}
 function dropPend(id){savePend(pend().filter(function(x){return x.order_id!==id}))}
+/* 2026-11-27 (محمد): الطلب يوصل لنظام فريق المتابعة حتى يگدرون يلگون ضمان الزبون برقم الضمان (AJH) أو رقمه */
+function crm(o){if(LOCAL||!navigator.sendBeacon)return;try{navigator.sendBeacon("https://cx.luxuryblack.business/api/lp/order",new Blob([JSON.stringify({order_id:o.order_id,phone:o.phone,page:"hair-"+(P.slug||""),items:"عطر شعر · "+(o.summary||"")})],{type:"text/plain;charset=UTF-8"}))}catch(e){}}
 function send(o){if(LOCAL){try{console.warn("[تجربة محلية] الطلب ما اندز",o)}catch(e){}return new Promise(function(r){setTimeout(function(){r(o)},300)})}
   if(!C.order_webhook_url)return Promise.reject(new Error("no webhook"));
   var ctl=window.AbortController?new AbortController():null,to=setTimeout(function(){ctl&&ctl.abort()},20000);
   return fetch(C.order_webhook_url,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(o),redirect:"follow",signal:ctl?ctl.signal:undefined})
-    .then(function(r){clearTimeout(to);if(!r.ok)throw new Error("http "+r.status);return r.text()}).then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}if(j&&j.ok===false)throw new Error(j.error||"rejected");
+    .then(function(r){clearTimeout(to);if(!r.ok)throw new Error("http "+r.status);return r.text()}).then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}if(j&&j.ok===false)throw new Error(j.error||"rejected");crm(o);
       if(C.capi_endpoint){try{fetch(C.capi_endpoint,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify({event_name:"Purchase",event_id:o.order_id,phone:o.phone,value:pxVal(o.total),currency:pxCur(),value_iqd:o.total,content_ids:o.capi.ids,fbp:o.capi.fbp,fbc:o.capi.fbc,ua:o.user_agent,url:o.capi.url,governorate:o.governorate,name:o.name}),keepalive:true})}catch(e){}}
       return o})}
 function done(o){dropPend(o.order_id);
@@ -230,7 +232,7 @@ function finishUp(){if(state.busy)return;state.upDone=true;clearTimeout(upT);$("
 function closeUp(){var m=$("up");if(!m)return;m.classList.remove("open");document.body.classList.remove("lock");$("upSheet").classList.remove("loading")}
 /* إذا سكّر الصفحة والعرض مفتوح: الطلب الأصلي (بدون العطر) ما يضيع */
 addEventListener("pagehide",function(){var m=$("up");if(LOCAL||!m||!m.classList.contains("open")||state.busy||!upF||!navigator.sendBeacon||!C.order_webhook_url)return;
-  state.addon=null;var o=buildOrder(upF,cur.id);try{if(navigator.sendBeacon(C.order_webhook_url,new Blob([JSON.stringify(o)],{type:"text/plain;charset=UTF-8"}))){state.upDone=true;dropPend(o.order_id)}}catch(e){}})
+  state.addon=null;var o=buildOrder(upF,cur.id);try{if(navigator.sendBeacon(C.order_webhook_url,new Blob([JSON.stringify(o)],{type:"text/plain;charset=UTF-8"}))){state.upDone=true;dropPend(o.order_id);crm(o)}}catch(e){}})
 function bgRetry(){if(LOCAL)return;var L=pend();if(!L.length)return;var o=L[L.length-1];send(o).then(function(){if(cur&&cur.id===o.order_id&&!state.busy)done(o);else dropPend(o.order_id)}).catch(function(){})}
 
 /* ===== التشغيل ===== */
